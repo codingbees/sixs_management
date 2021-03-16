@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/layuiadmin/main.js"></script>
+<style type="text/css">
+	.el-row {
+	    margin-bottom: 20px;
+	    &:last-child {
+	      margin-bottom: 0;
+	    }
+	  }
+</style>
+</head>
+<body>
+	<div id="app">
+		<el-container>
+	    	<el-main>
+	  			<el-card class="box-card" >
+	  				<div :style="'height:'+split_height+'px'">
+	  					<Split v-model="split" mode="vertical" on-moving="split_change">
+				            <div slot="top" class="demo-split-pane">
+								<el-row>
+						  			<template>
+									    <vxe-grid :data="objects" 
+									    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+									    :toolbar="tableToolbar"
+									    @edit-closed="editEvent" :highlight-current-row="true" :border="true" @current-change="getFieldsAndButtons" size="mini" :height="parent_height" style="width: 100%">
+									    <template v-slot:toolbar_buttons>
+									    	<el-button type="primary" @click="addInit" style="margin-left:10px" size="mini">新建模型</el-button>
+								          </template>
+									      <vxe-table-column
+									      	field="id" 
+									      	title="ID">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="en" 
+									      	title="标识"
+									      	show-overflow
+									      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="cn" 
+									      	title="对象"
+									      	show-overflow
+									      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="table_name"
+									      	show-overflow
+									      	title="元数据">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="where_attr" 
+									      	title="查询表达式"
+									      	show-overflow
+									      	:edit-render="{name: 'EditDownTextarea'}">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="interceptor" 
+									      	title="拦截器"
+									      	show-overflow
+									      	:edit-render="{name: 'EditDownTextarea'}">
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="is_add" 
+									      	title="是否可新增">
+									      	<template slot-scope="scope">
+										        <el-switch
+												  v-model="scope.row.is_add"
+												  active-color="#13ce66"
+												  inactive-color="#ff4949"
+												  @change="changeObject(scope.row)">
+												</el-switch>
+										    </template>
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="is_update" 
+									      	title="是否可修改">
+									      	<template slot-scope="scope">
+										        <el-switch
+												  v-model="scope.row.is_update"
+												  active-color="#13ce66"
+												  inactive-color="#ff4949"
+												  @change="changeObject(scope.row)">
+												</el-switch>
+										    </template>
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="is_update" 
+									      	title="是否行内修改">
+									      	<template slot-scope="scope">
+										        <el-switch
+												  v-model="scope.row.is_line_update"
+												  active-color="#13ce66"
+												  inactive-color="#ff4949"
+												  @change="changeObject(scope.row)">
+												</el-switch>
+										    </template>
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="is_delete" 
+									      	title="是否可删除">
+									      	<template slot-scope="scope">
+										        <el-switch
+												  v-model="scope.row.is_delete"
+												  active-color="#13ce66"
+												  inactive-color="#ff4949"
+												  @change="changeObject(scope.row)">
+												</el-switch>
+										    </template>
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="is_delete" 
+									      	title="是否拥有操作列">
+									      	<template slot-scope="scope">
+										        <el-switch
+												  v-model="scope.row.is_handle"
+												  active-color="#13ce66"
+												  inactive-color="#ff4949"
+												  @change="changeObject(scope.row)">
+												</el-switch>
+										    </template>
+									      </vxe-table-column>
+									      <vxe-table-column
+									      	field="handle_width" 
+									      	title="操作列宽度"
+									      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+									      </vxe-table-column>
+									      <vxe-table-column
+										      title="操作"
+										      width="210">
+										      <template slot-scope="scope">
+										      	<el-button size="mini" type="primary" @click="update(scope.row)">更新</el-button>
+										      	<el-button size="mini" type="success" @click="copy(scope.row)">复制</el-button>
+										        <el-button size="mini" type="danger" @click="del(scope.row)" icon="el-icon-delete"></el-button>
+										      </template>
+										    </vxe-table-column>
+									    </vxe-grid>
+									  </template>
+									  <!-- <div class="block" style="float:right;margin-top:10px">
+									    <el-pagination
+									      @current-change="handleCurrentChange"
+									      :current-page.sync="currentPage"
+									      :page-size="pageSize"
+									      layout="prev, pager, next, jumper"
+									      :page-count="totalPage">
+									    </el-pagination>
+									  </div> -->
+								</el-row>
+							</div>
+							<div slot="bottom" class="demo-split-pane">
+								<el-row style="margin-top:5px">
+						  			<template>
+						  				<el-tabs v-model="activeName">
+										    <el-tab-pane name="field">
+										    	<span slot="label">
+													字段管理
+											        <el-badge :value="fields.length" class="item"></el-badge>
+											    </span>
+											    <vxe-button status="primary" @click="addFieldInit">添加虚拟字段</vxe-button>
+											    &nbsp;&nbsp;Tip:虚拟字段背景为黄色
+										    	<vxe-table ref="fieldTable" :data="fields" :key="Math.random()" :border="true" stripe size="mini" :height="son_height-100"
+											    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+											    :row-style="rowStyle"
+											    @edit-closed="editClosedEvent" style="width: 100%;margin-top:10px">
+											      <vxe-table-column
+											      	field="order_num" 
+											      	title="排序"
+											      	width="80"
+											      	:edit-render="{name: '$input', props: {type: 'number'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="en" 
+											      	show-overflow
+											      	title="字段名">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="cn" 
+											      	show-overflow
+											      	title="中文名"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="width" 
+											      	show-overflow
+											      	title="控件宽度"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="align" 
+											      	show-overflow
+											      	title="排列"
+											      	:edit-render="{name: '$select', options: alignList, optionProps: {value: 'value', label: 'label'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="type" 
+											      	show-overflow
+											      	title="控件"
+											      	:edit-render="{name: '$select', options: typeList, optionProps: {value: 'value', label: 'label'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="type_config" 
+											      	show-overflow
+											      	title="控件配置"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="formatter" 
+											      	show-overflow
+											      	title="格式化"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="validator" 
+											      	show-overflow
+											      	title="表单验证"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="fictitious_sql" 
+											      	show-overflow
+											      	width="120"
+											      	title="虚拟字段来源"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_show" 
+											      	title="是否显示">
+											      	<template slot-scope="scope">
+												        <el-switch
+														  v-model="scope.row.is_show"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_query" 
+											      	title="是否可查询">
+											      	<template slot-scope="scope">
+												        <el-switch
+														  v-model="scope.row.is_query"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_add" 
+											      	title="是否可新增">
+											      	<template slot-scope="scope">
+												        <el-switch
+												          v-if="!scope.row.is_fictitious"
+														  v-model="scope.row.is_add"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_update" 
+											      	title="是否可修改">
+											      	<template slot-scope="scope">
+												        <el-switch
+												          v-if="!scope.row.is_fictitious"
+														  v-model="scope.row.is_update"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_update" 
+											      	title="行内修改">
+											      	<template slot-scope="scope">
+												        <el-switch
+												          v-if="!scope.row.is_fictitious"
+														  v-model="scope.row.is_line_update"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="update_validate" 
+											      	show-overflow
+											      	width="120"
+											      	title="行内修改权限"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_order" 
+											      	title="是否排序">
+											      	<template slot-scope="scope">
+												        <el-switch
+														  v-model="scope.row.is_order"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChange(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+												      title="操作"
+												      width="80">
+												      <template slot-scope="scope">
+												        <el-button size="small" type="danger" @click="delField(scope.row)" icon="el-icon-delete"></el-button>
+												      </template>
+												    </vxe-table-column>
+											    </vxe-table>
+										    </el-tab-pane>
+										    <el-tab-pane name="button">
+										    	<span slot="label">
+													按钮管理
+											        <el-badge :value="buttons.length" class="item"></el-badge>
+											    </span>
+										    	<vxe-button status="primary" @click="addButtonInit">添加按钮</vxe-button>
+										    	<vxe-table ref="buttonTable" :data="buttons" :key="Math.random()" :border="true" stripe size="mini" :height="son_height-100"
+											    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+											    @edit-closed="editBClosedEvent" style="width: 100%;margin-top:10px">
+											      <vxe-table-column
+											      	field="order_num" 
+											      	title="排序"
+											      	width="80"
+											      	:edit-render="{name: '$input', props: {type: 'number'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="location" 
+											      	title="按钮位置"
+											      	:edit-render="{name: '$select', options: locationList, optionProps: {value: 'value', label: 'label'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="type" 
+											      	title="按钮类型"
+											      	:edit-render="{name: '$select', options: bTypeList, optionProps: {value: 'value', label: 'label'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="icon" 
+											      	title="图标"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="color" 
+											      	title="按钮颜色"
+											      	:edit-render="{name: '$select', options: colorList, optionProps: {value: 'value', label: 'label'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="name" 
+											      	title="按钮名字"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="tip" 
+											      	show-overflow
+											      	width="120"
+											      	title="按钮提示信息"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="action" 
+											      	show-overflow
+											      	width="150"
+											      	title="按钮访问后端action"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="dialog_title" 
+											      	show-overflow
+											      	title="dialog标题"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="dialog_width" 
+											      	show-overflow
+											      	title="dialog宽度"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="dialog_height" 
+											      	show-overflow
+											      	title="dialog高度"
+											      	:edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="dialog_src" 
+											      	show-overflow
+											      	title="dialog地址"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="auth_role" 
+											      	show-overflow
+											      	width="140"
+											      	title="角色标识权限集合"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="auth_row" 
+											      	show-overflow
+											      	title="行内权限"
+											      	:edit-render="{name: 'EditDownTextarea'}">
+											      </vxe-table-column>
+											      <vxe-table-column
+											      	field="is_show" 
+											      	title="是否显示">
+											      	<template slot-scope="scope">
+												        <el-switch
+														  v-model="scope.row.is_show"
+														  active-color="#13ce66"
+														  inactive-color="#ff4949"
+														  @change="switchChangeButton(scope.row)">
+														</el-switch>
+												    </template>
+											      </vxe-table-column>
+											      <vxe-table-column
+												      title="操作"
+												      width="80">
+												      <template slot-scope="scope">
+												        <el-button size="small" type="danger" @click="delButton(scope.row)" icon="el-icon-delete"></el-button>
+												      </template>
+												    </vxe-table-column>
+											    </vxe-table>
+										    </el-tab-pane>
+									  	</el-tabs>
+									  </template>
+								</el-row>
+							</div>
+						</Split>
+					</div>
+					<el-dialog :title="dialogTitle" width="450px" :before-close="handleClose" :visible.sync="dialogVisible" :with-header="true">
+					  <el-form ref="form" :form="form" label-width="80px">
+				  		<el-form-item label="标识" :label-width="formLabelWidth">
+					      <el-input v-model.lazy="form.en" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="对象" :label-width="formLabelWidth">
+					      <el-input v-model.lazy="form.cn" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="元数据" :label-width="formLabelWidth">
+					      <el-select v-model.lazy="form.table_name" placeholder="请选择">
+						    <el-option
+						      v-for="item in tables"
+						      :key="item.value"
+						      :label="item.value"
+						      :value="item.value">
+						    </el-option>
+						  </el-select>
+					    </el-form-item>
+					    <el-form-item label="查询表达式" :label-width="formLabelWidth">
+					      <el-input type="textarea" :rows="2" v-model.lazy="form.where_attr" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="拦截器" :label-width="formLabelWidth">
+					      <el-input v-model.lazy="form.interceptor" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="表格操作列宽度" :label-width="formLabelWidth">
+					      <el-input v-model.lazy="form.handle_width" autocomplete="off"></el-input>
+					    </el-form-item>
+					  </el-form>
+					  <span slot="footer" class="dialog-footer">
+					    <el-button @click="dialogVisible = false">取 消</el-button>
+					    <el-button type="primary" @click="onSubmit">确 定</el-button>
+					  </span>
+					</el-dialog>
+					
+					<el-dialog title="添加虚拟字段" :visible.sync="fieldDialogFormVisible" :before-close="handleClose" width="400px">
+					  <el-form :model="form">
+					    <el-form-item label="排序" :label-width="formLabelWidth">
+					      <el-input v-model="form.order_num" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="字段名" :label-width="formLabelWidth">
+					      <el-input v-model="form.en" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="中文名" :label-width="formLabelWidth">
+					      <el-input v-model="form.cn" autocomplete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="配置来源" :label-width="formLabelWidth">
+					      <el-input type="textarea" v-model="form.fictitious_sql" autocomplete="off"></el-input>
+					    </el-form-item>
+					  </el-form>
+					  <div slot="footer" class="dialog-footer">
+					    <el-button @click="fieldDialogFormVisible = false">取 消</el-button>
+					    <el-button type="primary" @click="fieldSubmit">确 定</el-button>
+					  </div>
+					</el-dialog>
+					
+					
+					<el-dialog title="添加按钮" :visible.sync="buttonDialogFormVisible" :before-close="handleClose" width="800px">
+						<el-row :gutter="4">
+					        <el-form ref="buttonForm" :model="form" :rules="rules" size="small" label-width="100px">
+					          <el-col :span="12">
+					            <el-form-item label="排序" prop="order_num">
+					              <el-input v-model="form.order_num" placeholder="请输入排序" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="按钮位置" prop="location">
+					              <el-select v-model="form.location" placeholder="请输入按钮位置" clearable :style="{width: '100%'}">
+					              	<el-option v-for="item in locationList" :label="item.label" :value="item.value"></el-option>
+					              </el-select>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="按钮类型" prop="type">
+					              <el-select v-model="form.type" placeholder="请输入按钮类型" clearable :style="{width: '100%'}">
+					              	<el-option v-for="item in bTypeList" :label="item.label" :value="item.value"></el-option>
+					              </el-select>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="图标" prop="icon">
+					              <el-input v-model="form.icon" placeholder="请输入图标" clearable :style="{width: '100%'}"></el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="按钮颜色" prop="color">
+					              <el-select v-model="form.color" placeholder="请输入按钮颜色" clearable :style="{width: '100%'}">
+					              	<el-option v-for="item in colorList" :label="item.label" :value="item.value"></el-option>
+					              </el-select>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="名字" prop="name">
+					              <el-input v-model="form.name" placeholder="请输入名字" clearable :style="{width: '100%'}"></el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="按钮提示" prop="tip">
+					              <el-input v-model="form.tip" placeholder="请输入按钮提示" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="后端方法" prop="action">
+					              <el-input v-model="form.action" placeholder="请输入后端方法" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="dialog标题" prop="dialog_title">
+					              <el-input v-model="form.dialog_title" placeholder="请输入dialog标题" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="dialog宽度" prop="dialog_width">
+					              <el-input v-model="form.dialog_width" placeholder="请输入dialog宽度" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="dialog高度" prop="dialog_height">
+					              <el-input v-model="form.dialog_height" placeholder="请输入dialog高度" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="dialog地址" prop="dialog_src">
+					              <el-input v-model="form.dialog_src" placeholder="请输入dialog地址" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="角色标识" prop="auth_role">
+					              <el-input v-model="form.auth_role" placeholder="请输入角色标识" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					          <el-col :span="12">
+					            <el-form-item label="行内权限" prop="auth_row">
+					              <el-input v-model="form.auth_row" placeholder="请输入行内权限" clearable :style="{width: '100%'}">
+					              </el-input>
+					            </el-form-item>
+					          </el-col>
+					        </el-form>
+					      </el-row>
+					      <div slot="footer">
+					        <el-button @click="buttonDialogFormVisible = false">取消</el-button>
+					        <el-button type="primary" @click="buttonSubmit">确定</el-button>
+					      </div>
+					
+					</el-dialog>
+				</el-card>
+			</el-main>
+		</el-container>
+	</div>
+<script>
+
+//窗口变化
+window.onresize=function(){  
+	this.app.fullHeight = document.documentElement.clientHeight; //窗口高度
+}
+	  
+	  var app = new Vue({
+		  el: '#app',
+		  data: {
+			  objects:[],
+			  object_id:'',
+			  fields:[],
+			  tables:[],
+			  buttons:[],
+			  form:{},
+			  split:0.4,
+			  split_height:0,
+		      parent_height:0,
+		      son_height:0,
+			  activeName: 'field',
+			  typeList:[
+				  {value:'input',label:'输入框'},
+				  {value:'select',label:'选择框'},
+				  {value:'radio',label:'单选按钮'},
+				  {value:'switch',label:'开关'},
+				  {value:'date',label:'日期'},
+				  {value:'datetime',label:'日期时间'},
+				  {value:'file',label:'附件'}
+			  ],
+			  alignList:[
+				  {value:'left',label:'居左'},
+				  {value:'center',label:'居中'},
+				  {value:'right',label:'居右'},
+			  ],
+			  locationList:[
+				{value:1,label:'头部'},
+				{value:2,label:'行内'}
+			  ],
+			  bTypeList:[
+				{value:1,label:'confirm'},
+				{value:2,label:'combobox'},
+				{value:3,label:'dialog'}
+			  ],
+			  colorList:[
+				{value:'',label:'默认按钮'},
+				{value:'primary',label:'主要按钮'},
+				{value:'success',label:'成功按钮'},
+				{value:'info',label:'信息按钮'},
+				{value:'warning',label:'警告按钮'},
+				{value:'danger',label:'危险按钮'},
+			  ],
+			  dialogVisible: false,
+			  dialogTitle:'',
+			  buttonDialogFormVisible:false,
+			  fieldDialogFormVisible:false,
+		      formLabelWidth: '110px',
+		      fullHeight: document.documentElement.clientHeight,
+		      currentPage:1,
+		      totalPage:0,
+		      pageSize:20,
+		      tableToolbar: {
+		          slots: {
+		            buttons: 'toolbar_buttons'
+		          },
+		          refresh: true,
+		          export: true,
+		          print: true,
+		          zoom: true,
+		          custom: true,
+		          perfect:true
+		      },
+		      rules: {
+		          order_num: [{
+		            required: true,
+		            message: '请输入排序',
+		            trigger: 'blur'
+		          }],
+		          location: [{
+		            required: true,
+		            message: '请输入按钮位置',
+		            trigger: 'change'
+		          }],
+		          type: [{
+		            required: true,
+		            message: '请输入按钮类型',
+		            trigger: 'change'
+		          }],
+		          icon: [],
+		          color: [{
+		            required: true,
+		            message: '请输入按钮颜色',
+		            trigger: 'blur'
+		          }],
+		          name: [{
+		            required: true,
+		            message: '请输入名字',
+		            trigger: 'blur'
+		          }],
+		          tip: [{
+		            required: true,
+		            message: '请输入按钮提示',
+		            trigger: 'blur'
+		          }],
+		          action: [{
+		            required: true,
+		            message: '请输入后端方法',
+		            trigger: 'blur'
+		          }],
+		          auth_role: [],
+		          auth_row: [],
+		        },
+		  },
+		  created: function () {
+			  this.user_roles = '#(session.user.roles)';
+			  this.getObjects();
+			  this.getTables();
+		  },
+		  watch:{
+			  objects:function(){
+				  this.$nextTick(()=>{ // 页面渲染完成后的回调
+					  this.split_height=this.fullHeight-85;
+				      this.parent_height=this.split_height*this.split;
+				      this.son_height=this.split_height*(1-this.split);
+				  });
+			  },
+			  fullHeight:function(){
+				  this.split_height=this.fullHeight-85;
+			      this.parent_height=this.split_height*this.split;
+			      this.son_height=this.split_height*(1-this.split);
+			  },
+			  split:function(){
+				  this.split_height=this.fullHeight-85;
+			      this.parent_height=this.split_height*this.split;
+			      this.son_height=this.split_height*(1-this.split);
+			  }
+		  },
+		  methods: {
+			  getObjects: function (event) {
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/getObjects",
+		    		}).then((res)=>{
+				    	if(res.status==200){
+				    		_this.objects = res.data;
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})  
+			  },
+			  handleCurrentChange(){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/getObjects",
+			    		params:{currentPage:val,pageSize:_this.pageSize}
+		    		}).then((res)=>{
+		    			if(res.status==200){
+				    		_this.objects = res.data;
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})  
+			  },
+			  getFieldsAndButtons({ row }){
+				  var _this = this;
+				  _this.object_id = row.id;
+				  axios({
+			    		method:"post",
+			    		url:"/data/getFieldsAndButtons",
+			    		params:{object_id:row.id}
+		    		}).then((res)=>{
+				    	if(res.status==200){
+				    		_this.fields = res.data.fields;
+				    		_this.buttons = res.data.buttons;
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})  
+			  },
+			  getTables(){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/getTables",
+		    		}).then((res)=>{
+				    	if(res.status==200){
+				    		_this.tables = res.data;
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})  
+			  },
+			  changeObject(row){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeObject",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+			  },
+			  //change
+			  switchChange(row){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeFiled",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+			  },
+			//change
+			  switchChangeButton(row){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeButton",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+			  },
+			  //cell编辑
+			  editEvent ({ row, column }, event) {
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeObject",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+	          },
+			  //cell编辑
+			  editClosedEvent ({ row, column }, event) {
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeFiled",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		    });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+	          },
+			  addInit:function(){
+		    	this.dialogTitle='新建模型';
+		    	this.form = {};
+		    	this.dialogVisible = true;
+			  },
+		    onSubmit:function(){
+		    	var _this = this;
+		    	axios({
+		    		method:"post",
+		    		url:"/data/newObject",
+		    		params:_this.form
+	    		}).then((res)=>{
+			    	if(res.status==200){
+				    	console.log(res);
+			    		if(res.data.state=="ok"){
+			    			_this.dialogVisible = false;
+			    			_this.$message({
+		    		          message: res.data.msg,
+		    		          type: 'success'
+		    		        });
+			    		}else{
+			    			this.$message.error(res.data.msg);
+			    		}
+				  	}else{
+				  		this.$message.error('网络请求失败');
+				  	}
+	    		})
+		    },
+		    update(row){
+		    	var _this = this;
+		    	axios({
+		    		method:"post",
+		    		url:"/data/updateObject",
+		    		params:row
+	    		}).then((res)=>{
+			    	if(res.status==200){
+				    	console.log(res);
+			    		if(res.data.state=="ok"){
+			    			_this.dialogVisible = false;
+			    			_this.$message({
+		    		          message: res.data.msg,
+		    		          type: 'success'
+		    		        });
+			    		}else{
+			    			this.$message.error(res.data.msg);
+			    		}
+				  	}else{
+				  		this.$message.error('网络请求失败');
+				  	}
+	    		})
+			},
+			copy(row){
+		    	var _this = this;
+		    	this.$confirm('确认是否要删除此数据模型吗？', '提示', {
+		            confirmButtonText: '确定',
+		            cancelButtonText: '取消',
+		            type: 'warning'
+		          }).then(() => {
+		        	  axios({
+				    		method:"post",
+				    		url:"/data/copyObject",
+				    		params:row
+			    		}).then((res)=>{
+					    	if(res.status==200){
+					    		if(res.data.state=="ok"){
+					    			_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+					    		}else{
+					    			this.$message.error(res.data.msg);
+					    		}
+						  	}else{
+						  		this.$message.error('网络请求失败');
+						  	}
+			    		})
+		          })
+			},
+		    del:function(row){
+		    	var _this = this;
+		    	this.$confirm('确认是否要删除此数据模型吗？', '提示', {
+		            confirmButtonText: '确定',
+		            cancelButtonText: '取消',
+		            type: 'warning'
+		          }).then(() => {
+		        	  axios({
+				    		method:"post",
+				    		url:"/data/del",
+				    		params:row
+			    		}).then((res)=>{
+					    	if(res.status==200){
+						    	console.log(res);
+					    		if(res.data.state=="ok"){
+					    			_this.dialogFormVisible = false;
+					    			_this.getObjects();
+					    			_this.$message({
+					    		          message: res.data.msg,
+					    		          type: 'success'
+					    		        });
+					    		}else{
+					    			this.$message.error(res.data.msg);
+					    		}
+						  	}else{
+						  		this.$message.error('网络请求失败');
+						  	}
+			    		})
+		          }).catch(() => {
+		            this.$message({
+		              type: 'info',
+		              message: '已取消删除'
+		            });          
+		          });
+		    },
+		    delButton:function(row){
+		    	var _this = this;
+		    	this.$confirm('确认是否要删除此字段？', '提示', {
+		            confirmButtonText: '确定',
+		            cancelButtonText: '取消',
+		            type: 'warning'
+		          }).then(() => {
+		        	  axios({
+				    		method:"post",
+				    		url:"/data/delField",
+				    		params:row
+			    		}).then((res)=>{
+					    	if(res.status==200){
+						    	console.log(res);
+					    		if(res.data.state=="ok"){
+					    			_this.$message({
+					    		          message: res.data.msg,
+					    		          type: 'success'
+					    		        });
+					    			_this.$refs.fieldTable.remove(row);
+					    		}else{
+					    			this.$message.error(res.data.msg);
+					    		}
+						  	}else{
+						  		this.$message.error('网络请求失败');
+						  	}
+			    		})
+		          }).catch(() => {
+		            this.$message({
+		              type: 'info',
+		              message: '已取消删除'
+		            });          
+		          });
+		    },
+		    addFieldInit:function(){
+			    if(this.object_id == ''){
+			    	this.$message.error('请先选择元数据模型');
+				}else{
+					this.form = {};
+			    	this.fieldDialogFormVisible = true;
+				}
+			},
+			fieldSubmit:function(){
+		    	var _this = this;
+		    	_this.form.data_object_id = _this.object_id
+		    	axios({
+		    		method:"post",
+		    		url:"/data/newField",
+		    		params:_this.form
+	    		}).then((res)=>{
+			    	if(res.status==200){
+			    		if(res.data.state=="ok"){
+			    			_this.fieldDialogFormVisible = false;
+			    			_this.$message({
+		    		          message: res.data.msg,
+		    		          type: 'success'
+		    		        });
+		    		        _this.fields.push(res.data.row);
+			    		}else{
+			    			this.$message.error(res.data.msg);
+			    		}
+				  	}else{
+				  		this.$message.error('网络请求失败');
+				  	}
+	    		})
+		    },
+		    addButtonInit:function(){
+			    if(this.object_id == ''){
+			    	this.$message.error('请先选择元数据模型');
+				}else{
+					this.form = {color:''};
+			    	this.buttonDialogFormVisible = true;
+				}
+			},
+			buttonSubmit:function(){
+				var _this = this;
+				this.$refs['buttonForm'].validate(valid => {
+			        if (!valid) return
+			        _this.form.data_object_id = _this.object_id
+			    	axios({
+			    		method:"post",
+			    		url:"/data/newButton",
+			    		params:_this.form
+		    		}).then((res)=>{
+				    	if(res.status==200){
+				    		if(res.data.state=="ok"){
+				    			_this.buttonDialogFormVisible = false;
+				    			_this.$message({
+			    		          message: res.data.msg,
+			    		          type: 'success'
+			    		        });
+			    		        _this.buttons.push(res.data.row);
+				    		}else{
+				    			this.$message.error(res.data.msg);
+				    		}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+			      })
+		    },
+		    editBClosedEvent ({ row, column }, event) {
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/data/changeButton",
+			    		params:row
+		    		}).then((res)=>{
+				    	if(res.status==200){
+					    	if(res.data.state=="ok"){
+					    		_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		    });
+						    }else{
+						    	this.$message.error(res.data.msg);
+							}
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})
+	          },
+	          delButton:function(row){
+			    	var _this = this;
+			    	this.$confirm('确认是否要删除此按钮？', '提示', {
+			            confirmButtonText: '确定',
+			            cancelButtonText: '取消',
+			            type: 'warning'
+			          }).then(() => {
+			        	  axios({
+					    		method:"post",
+					    		url:"/data/delButton",
+					    		params:row
+				    		}).then((res)=>{
+						    	if(res.status==200){
+							    	console.log(res);
+						    		if(res.data.state=="ok"){
+						    			_this.$message({
+						    		          message: res.data.msg,
+						    		          type: 'success'
+						    		        });
+						    			_this.$refs.buttonTable.remove(row);
+						    		}else{
+						    			this.$message.error(res.data.msg);
+						    		}
+							  	}else{
+							  		this.$message.error('网络请求失败');
+							  	}
+				    		})
+			          }).catch(() => {
+			            this.$message({
+			              type: 'info',
+			              message: '已取消删除'
+			            });          
+			          });
+			    },
+		    handleClose(done) {
+		        this.$confirm('确认关闭？')
+		          .then(_ => {
+		            done();
+		          })
+		          .catch(_ => {});
+	        },
+	        rowStyle ({ row, rowIndex }) {
+              if (row.is_fictitious) {
+                return {
+                  backgroundColor: '#F2DC85',
+                }
+              }
+            },
+		  }
+		})
+</script>
+</body>
+</html>

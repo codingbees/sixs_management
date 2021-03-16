@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>#(model)</title>
+<script src="/layuiadmin/main.js"></script>
+<script src="/layuiadmin/ray/queryForm.js"></script>
+<script src="/layuiadmin/ray/addForm.js"></script>
+<script src="/layuiadmin/ray/editForm.js"></script>
+<style type="text/css">
+</style>
+</head>
+<body>
+	<div id="app" style="background-color: #F2F2F2">
+		<el-container>
+	    	<el-main>
+	  			<el-card class="box-card">
+	  				<div ref="banner">
+	  					<!-- 查询form -->
+	  					<query-form :params="{columns:parent_columns,selectList:parent_selectList,is_query:is_query}"></query-form>
+						<!-- 查询form -->
+					</div>
+					<div :style="'height:'+split_height+'px'">
+				        <Split v-model="split" mode="vertical" on-moving="split_change">
+				            <div slot="top" class="demo-split-pane">
+				                <el-row>
+					  			  <template>
+								    <vxe-grid :data="parent_data"
+								    @current-change="parent_change" 
+								    highlight-current-row 
+								    :export-config="{remote:true,exportMethod:this.parent_exportDataEvent}"
+								    ref="xTable" :border="true" stripe size="mini" :height="parent_height"
+								    :toolbar="tableToolbar"
+								    resizable
+								    highlight-hover-row
+			          				highlight-current-row
+								    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+								    :checkbox-config="{labelField: '', highlight: true, range: true,change:'checkEvent'}"
+								    @checkbox-change="checkEvent"
+								    @checkbox-all="checkEvent"
+								    @checkbox-range="checkEvent"
+								    :pager-config="tablePage"
+								    @page-change="handleCurrentChange"
+								    @edit-closed="parentEditClosedEvent" style="width: 100%">
+								    <template v-slot:toolbar_buttons>
+							            <el-button v-if="p_data_object.is_add" type="primary" size="mini" @click="parentAddInit" style="margin-left:10px">新增</el-button>
+							            <el-button v-for="item in p_headButtons" v-if="item.is_show&&headButtonAuth(item)" size="mini" :type="item.color" :icon="item.icon" @click="item.type==1?headButtonConfirmClick(item):item.type==2?headButtonComboboxClick(item):headButtonDialogClick(item)">{{item.name}}</el-button>
+							          </template>
+							          <vxe-table-column type="checkbox" title="" width="60"></vxe-table-column>
+								      <vxe-table-column v-if="item.is_show" v-for="(item,index) in parent_columns" :key="item.id"
+								      	:field="item.en"
+								      	:title="item.cn"
+								      	:width="item.width"
+								      	:sortable="item.is_order"
+								      	:align="item.align"
+						      			header-align="center"
+								      	show-overflow
+								      	show-header-overflow
+								      	v-bind="item.type!='file'?(item.is_update&&p_data_object.is_line_update?
+									      	(item.type=='input'?{'edit-render':{name: 'EditDownTextarea'}}:
+									      	 item.type=='select'||item.type=='radio'?{'edit-render':{name: '$select', options: parent_selectList[index], optionProps: {value: 'value', label: 'label'}}}:
+									      	 item.type=='switch'?{'cell-render':{name: '$switch',events:{change:parentEditClosedEvent}}}:
+									      	 item.type=='date'?{'edit-render':{name: '$input', props: {type: 'date'}}}:
+									      	 item.type=='datetime'?{'edit-render':{name: '$input', props: {type: 'datetime'}}}:''):
+									      	 
+									      	 item.formatter?{'formatter':['format',item.formatter],'type':'html'}:
+											 item.type=='select'||item.type=='radio'?{'cell-render':{name:'cell-select',options: parent_selectList[index]}}:
+											 item.type=='switch'?{'cell-render':{name:'cell-switch'}}:'')
+											 
+											 :item.is_update&&p_data_object.is_update?{'cell-render':{name: '$button',props:{status:'primary',size:'small',content:'查看',itemInfo:item},events:{click:parent_fileEdit}}}:
+											 {'cell-render':{name: '$button',props:{status:'primary',size:'small',content:'查看'},events:{click:parent_fileScan}}}">
+								      </vxe-table-column>
+								      <vxe-table-column
+									      title="操作"
+									      show-overflow
+								      	  show-header-overflow
+									      :width="p_data_object.handle_width"
+									      v-if="p_data_object.is_handle"
+									      fixed="right">
+									      <template slot-scope="scope">
+									      	<el-button v-if="s_data_object.is_add" type="primary" size="mini" @click="sonAddInit(scope.row)">新增子数据</el-button>
+									      	<el-button v-for="item in p_lineButtons" v-if="item.is_show&&lineButtonAuth(item,scope.row)" size="mini" :type="item.color" :icon="item.icon" @click="item.type==1?lineButtonConfirmClick(scope.row,item):item.type==2?lineButtonComboboxClick(scope.row,item):lineButtonDialogClick(scope.row,item)">{{item.name}}</el-button>
+									        <el-button type="primary" v-if="p_data_object.is_update" size="mini" icon="el-icon-edit" @click="parentEditInit(scope.row)" circle></el-button>
+									        <el-button type="danger" size="mini" v-if="p_data_object.is_delete" icon="el-icon-delete" @click="del(scope.row,'#(menu.data_object_id)')" circle></el-button>
+									      </template>
+									  </vxe-table-column>
+								    </vxe-grid>
+								  </template>
+								</el-row>
+				            </div>
+				            <div slot="bottom" class="demo-split-pane">
+				                <el-row>
+					  			  <template>
+								    <vxe-grid :data="son_data" ref="yTable" :border="true" stripe size="mini" :height="son_height"
+								    :export-config="{remote:true,exportMethod:this.son_exportDataEvent}"
+								    :toolbar="tableToolbar"
+								    highlight-hover-row
+			          				highlight-current-row
+								    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+								    @edit-closed="sonEditClosedEvent" style="width: 100%"
+								    :checkbox-config="{labelField: '', highlight: true, range: true,change:'son_checkEvent'}"
+								    @checkbox-change="son_checkEvent"
+								    @checkbox-all="son_checkEvent"
+								    @checkbox-range="son_checkEvent">
+								    <template v-slot:toolbar_buttons>
+							            <el-button style="margin-left:10px" v-for="item in s_headButtons" v-if="item.is_show&&headButtonAuth(item)" size="mini" :type="item.color" :icon="item.icon" @click="item.type==1?son_headButtonConfirmClick(item):item.type==2?son_headButtonComboboxClick(item):son_headButtonDialogClick(item)">{{item.name}}</el-button>
+							          </template>
+							          <vxe-table-column type="checkbox" title="" width="60"></vxe-table-column>
+								      <vxe-table-column v-if="item.is_show" v-for="(item,index) in son_columns" :key="item.id"
+								      	:field="item.en" 
+								      	:title="item.cn"
+								      	:width="item.width"
+								      	:align="item.align"
+						      			header-align="center"
+								      	show-overflow
+								      	v-bind="item.type!='file'?(item.is_update&&s_data_object.is_line_update?
+									      	(item.type=='input'?{'edit-render':{name: 'EditDownTextarea'}}:
+									      	 item.type=='select'||item.type=='radio'?{'edit-render':{name: '$select', options: son_selectList[index], optionProps: {value: 'value', label: 'label'}}}:
+									      	 item.type=='switch'?{'cell-render':{name: '$switch',events:{change:parentEditClosedEvent}}}:
+									      	 item.type=='date'?{'edit-render':{name: '$input', props: {type: 'date'}}}:
+									      	 item.type=='datetime'?{'edit-render':{name: '$input', props: {type: 'datetime'}}}:''):
+									      	 
+									      	 item.formatter?{'formatter':['format',item.formatter],'type':'html'}:
+											 item.type=='select'||item.type=='radio'?{'cell-render':{name:'cell-select',options: son_selectList[index]}}:
+											 item.type=='switch'?{'cell-render':{name:'cell-switch'}}:'')
+											 
+											 :item.is_update&&s_data_object.is_update?{'cell-render':{name: '$button',props:{status:'primary',size:'small',content:'查看'},events:{click:son_fileEdit}}}:
+											 {'cell-render':{name: '$button',props:{status:'primary',size:'small',content:'查看'},events:{click:son_fileScan}}}">
+								      </vxe-table-column>
+								      <vxe-table-column
+									      title="操作"
+									      show-overflow
+									      :width="s_data_object.handle_width"
+									      v-if="s_data_object.is_handle"
+									      show-overflow
+								      	  show-header-overflow
+									      fixed="right">
+									      <template slot-scope="scope">
+									      	<el-button v-for="item in s_lineButtons" size="mini" :type="item.color" :icon="item.icon" @click="item.type==1?lineButtonConfirmClick(scope.row,item):item.type==2?lineButtonComboboxClick(scope.row,item):lineButtonDialogClick(scope.row,item)">{{item.name}}</el-button>
+									        <el-button type="primary" v-if="s_data_object.is_update" size="mini" icon="el-icon-edit" @click="sonEditInit(scope.row)" circle></el-button>
+									        <el-button type="danger" v-if="s_data_object.is_delete" size="mini" icon="el-icon-delete" @click="del(scope.row,'#(menu.son_data_object_id)')" circle></el-button>
+									      </template>
+									  </vxe-table-column>
+								    </vxe-grid>
+								  </template>
+								</el-row>
+				            </div>
+				        </Split>
+				    </div>
+				</el-card>
+				
+				
+				<!-- 文件列表dialog -->
+				<el-dialog title="文件列表" :visible.sync="fileDialogVisible" :with-header="true" width="300px">
+					<template v-for="(item,index) in inFileList">
+						<el-row style="margin-top:10px" justify="space-between">
+							<el-col :span="20">
+								<a :href="domin_url+item.url" target="_blank">{{item.name}}</a>
+							</el-col>
+							<el-col :span="4" v-if="file_edit" style="text-align:right">
+								<a style="cursor:pointer" @click="delFile(item.id,index)">x</a>
+							</el-col>
+						</el-row>
+					</template>
+						<el-row style="margin-top:20px">
+							<el-upload
+								  class="upload-demo"
+								  ref="uploadUpdate"
+								  action="/common/upload"
+								  :multiple="false"
+								  :on-remove="beforeRemove"
+								  :on-success="handleSuccess"
+								  :on-exceed="handleExceed"
+								  :file-list="fileList"
+								  :auto-upload="true">
+								  <el-button v-if="file_edit" slot="trigger" size="small">上传</el-button>
+								  <el-button v-if="file_edit" type="primary" size="small" @click="confirmUpload()">保存</el-button>
+								  <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+							  </el-upload>
+						</el-row>
+				</el-dialog>
+				<!-- 文件列表dialog -->
+				<!-- <el-dialog :title="buttonDialogTitle" :visible.sync="buttonDialog" :with-header="true" :width="buttonDialogWidth">
+					<div :style="{'height':dialogHeight}">
+					<iframe ref="dialogFrame" :key="Math.random()" :src="buttonDialogSrc" frameborder="0" width="100%" height="100%"></iframe>
+					</div>
+				</el-dialog> -->
+	  		</el-main>
+		</el-container>
+		<!-- 主表新增dialog -->
+		<add-form :params="{columns:parent_columns,selectList:parent_selectList,rules:parent_rules,show:parentDialogVisible}"></add-form>
+		<!-- 主表新增dialog -->
+		
+		<!-- 子表新增dialog -->
+		<add-form :params="{columns:son_columns,selectList:son_selectList,rules:son_rules,show:sonDialogVisible}"></add-form>
+		<!-- 子表新增dialog -->
+		
+		<!-- 主表编辑dialog -->
+		<edit-form :params="{columns:parent_columns,selectList:parent_selectList,rules:parent_rules,show:p_editDialogVisible,row:edit_row}"></edit-form>
+		<!-- 主表编辑dialog -->
+		
+		<!-- 子表编辑dialog -->
+		<edit-form :params="{columns:son_columns,selectList:son_selectList,rules:son_rules,show:s_editDialogVisible,row:edit_row}"></edit-form>
+		<!-- 子表编辑dialog -->
+	</div>
+<script src="/layuiadmin/ray/zz.js"></script>
+<script>
+var app = new Vue({
+	el: '#app',
+	data: buildData({
+	 
+	}),
+	created: function () {
+		this.getMenuInfo();
+	},
+	watch:buildWatch({
+	
+	}),
+	methods: buildMethods({
+	
+	}),
+})
+</script>
+
+</body>
+</html>

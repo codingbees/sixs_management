@@ -1,0 +1,90 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 角色管理 iframe 框</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+</head>
+<body>
+  <div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+    <div class="layui-form-item">
+      <label class="layui-form-label">角色标识</label>
+      <div class="layui-input-block">
+        <input type="text" name="role_name" value="#(role.role_name)" lay-verify="title" autocomplete="off" placeholder="请输入角色标识" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">角色名</label>
+      <div class="layui-input-block">
+        <input type="text" name="role_nick_name" value="#(role.role_nick_name)" lay-verify="title" autocomplete="off" placeholder="请输入角色名" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">具体描述</label>
+      <div class="layui-input-block">
+        <input type="text" name="role_desc" value="#(role.role_desc)" lay-verify="title" autocomplete="off" placeholder="请输入具体描述" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+		<label class="layui-form-label">选择权限</label>
+		<div class="layui-input-block">
+			<div id="LAY-auth-tree-index"></div>
+			<input type="hidden" id="role_id" name="role_id" lay-verify="role_id" class="layui-input" value="#(role.id)">
+			<input type="hidden" id="role_menu_auth" name="role_menu_auth" lay-verify="role_menu_auth" class="layui-input">
+		</div>
+	</div>
+    <div class="layui-form-item layui-hide">
+      <button class="layui-btn" lay-submit lay-filter="LAY-user-role-submit" id="LAY-user-role-submit">提交</button>
+    </div>
+  </div>
+
+  <script src="/layuiadmin/layui/layui.js"></script>  
+  <script>
+  layui.config({
+    base: '/layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index','authtree', 'form'], function(){
+    var $ = layui.$
+    ,authtree = layui.authtree
+    ,form = layui.form ;
+    
+    $.ajax({
+		url: '/sys/getMenuTree/#(role.id)',
+		dataType: 'json',
+		success: function(data){
+			// 渲染时传入渲染目标ID，树形结构数据（具体结构看样例，checked表示默认选中），以及input表单的名字
+			authtree.render('#LAY-auth-tree-index', data.data.trees, {inputname: 'authids[]', layfilter: 'lay-check-auth', openall: true});
+			setTimeout(function(){
+				// 获取选中的叶子节点
+				var leaf = authtree.getChecked('#LAY-auth-tree-index');
+				var role_menu_id = "";
+				for ( var i = 0; i <leaf.length; i++){
+					role_menu_id += leaf[i]+","
+				}
+				$("#role_menu_auth").val(role_menu_id);
+			}, 100);
+			form.on('checkbox(lay-check-auth)', function(data){
+				// 注意这里：需要等待事件冒泡完成，不然获取叶子节点不准确。
+				setTimeout(function(){
+					// 获取选中的叶子节点
+					var leaf = authtree.getChecked('#LAY-auth-tree-index');
+					var role_menu_id = "";
+					for ( var i = 0; i <leaf.length; i++){
+						role_menu_id += leaf[i]+","
+					}
+					$("#role_menu_auth").val(role_menu_id);
+				}, 100);
+			});
+		}
+	});
+    
+  })
+  </script>
+</body>
+</html>

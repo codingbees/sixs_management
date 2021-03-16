@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 控制台主页一</title>
+  <script src="/layuiadmin/main.js"></script>
+  <style>
+  	.tt{
+		background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);
+		margin-top:20px;
+		color:white;
+		font-size:50px;
+		text-align: center;
+		border-radius: 20px;
+	}
+  </style>
+</head>
+<body>
+    <div id="app">
+		<el-container>
+	    	<el-main>
+	  			<el-card class="box-card" :style="'height:'+fullHeight+'px'">
+	  				<el-row>
+	  					<el-col :span="24" style="font-size:80px;text-align:center;margin-top:10%">#(system.company)</el-col>
+					</el-row>
+					<el-row>
+						<el-col :span="6">       </el-col>
+	  					<el-col :span="12" style="text-align:center;margin-top:20px">
+							<el-card shadow="always" @click.native="to()" class="tt">进入前端</el-card>
+						</el-col>
+					</el-row>
+					<!-- <el-row>
+						<el-col :span="24" style="text-align:right;margin-top:100px">
+							<p>有任何问题请联系企划信息部雷磊 </p>
+				            <p>联系方式：18580633334 </p>
+				            <p>—— Ray</p>
+			            </el-col>
+					</el-row> -->
+				</el-card>
+			</el-main>
+		</el-container>
+	</div>
+  <script>
+
+  var app = new Vue({
+	  el: '#app',
+	  data: {
+		  fullHeight: document.documentElement.clientHeight-60,
+	  },
+	  methods:{
+		to(){
+			parent.location.href="/front";
+		}
+	  }
+  })
+  </script>
+</body>
+</html>
+

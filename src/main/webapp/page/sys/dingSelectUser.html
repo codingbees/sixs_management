@@ -1,0 +1,49 @@
+<script src="http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.57/dingtalk.open.js"></script>
+<script>
+var _config = #(getConfig(system_url+'/os/selectUser'));
+dd.config({
+    agentId: _config.agentid, // 必填，微应用ID
+    corpId: _config.corpId,//必填，企业ID
+    timeStamp: _config.timeStamp, // 必填，生成签名的时间戳
+    nonceStr: _config.nonceStr, // 必填，生成签名的随机串
+    signature: _config.signature, // 必填，签名
+    jsApiList : [
+		'runtime.info',
+		'biz.contact.choose',
+		'device.notification.confirm',
+		'device.notification.alert',
+		'device.notification.prompt',
+		'biz.ding.post',
+		'biz.util.openLink',
+		'runtime.permission.requestAuthCode'
+	]
+})
+
+dd.ready(function() {
+		dd.biz.contact.choose({
+		    multiple: false, //是否多选：true多选 false单选； 默认true
+		    //users: ['10001', '10002', ...], //默认选中的用户列表，员工userid；成功回调中应包含该信息
+		    corpId: _config.corpId, //企业id
+		    max: 1, //人数限制，当multiple为true才生效，可选范围1-1500
+		    onSuccess: function(data) {
+		    /* data结构
+		      [{
+		        "name": "张三", //姓名
+		        "avatar": "
+		http://g.alicdn.com/avatar/zhangsan.png
+		" //头像图片url，可能为空
+		        "emplId": '0573', //员工userid
+		       },
+		       ...
+		      ]
+		    */
+		    },
+		    onFail : function(err) {}
+		});
+})
+
+dd.error(function(err) {
+    alert('dd error: ' + JSON.stringify(err));
+})
+
+</script>

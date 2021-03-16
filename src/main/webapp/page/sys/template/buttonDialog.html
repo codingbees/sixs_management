@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/layuiadmin/main.js"></script>
+</head>
+<body>
+	<div id="app" style="padding:20px">
+	<el-button @click="close()">1</el-button>
+	</div>
+<script>
+	var vm = new Vue({
+		  el: '#app',
+		  data: {
+			row:{},
+			rows:{},
+		  },
+		  mounted() {
+			  window.parent.app.dialogHeight = document.documentElement.offsetHeight+"px";
+			  this.row = window.parent.app.dialogRow;
+			  this.rows = window.parent.app.dialogRows;
+			  console.log(this.row);
+			  console.log(this.rows);
+		  },
+		  methods:{
+			  close(){
+				  window.parent.app.dialogClose();
+			  }
+		  }
+	})
+</script>
+</body>
+</html>

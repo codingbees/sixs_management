@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+<title>Login</title>
+<!-- Meta tags -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<!-- //Meta tags -->
+<script src="/layuiadmin/main.js"></script>
+<script src="//g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<link rel="stylesheet" href="/layuiadmin/login/css/style.css" type="text/css" media="all" /><!-- Style-CSS -->
+<link href="/layuiadmin/login/css/font-awesome.css" rel="stylesheet"><!-- font-awesome-icons -->
+</head>
+<body>
+<section class="w3l-form-36" id="app">
+	<div class="form-36-mian section-gap">
+		<div class="wrapper">
+			<div class="form-inner-cont">
+				<h3>#(system.company)</h3>
+				<el-form ref="form" :model="form" action="" class="signin-form">
+					<div class="form-input">
+						<span class="pfep pfep-750-user" aria-hidden="true"></span> 
+						<input type="text" v-model="form.username" placeholder="Username" required />
+					</div>
+					<div class="form-input">
+						<span class="fa fa-key" aria-hidden="true"></span> 
+						<input type="password" v-model="form.password" placeholder="Password" required />
+					</div>
+					<div class="login-remember d-grid">
+						<label class="check-remaind">
+							<!-- <input type="checkbox">
+							<span class="checkmark"></span>
+							<p class="remember">Remember me</p> -->
+						</label>
+						<button type="button" class="btn theme-button" @click="login()">登录</button>
+					</div>
+					<!-- <div class="new-signup">
+						<a href="#reload" class="signuplink">Forgot password?</a>
+					</div> -->
+				</el-form>
+				<div class="social-icons">
+					<p class="continue"><span>Or</span></p>
+					<div class="social-login">
+						<a href="#facebook" @click="ding">
+							<div class="google" style="background-color: white">
+								<img src="/layuiadmin/login/images/dd.png" style="white:35px;height:35px"/>
+							</div>
+						</a>
+						<a href="#facebook">
+							<div class="google" style="background-color: white">
+								<img src="/layuiadmin/login/images/wex.png" style="white:35px;height:35px"/>
+							</div>
+						</a>
+					</div>
+				</div>
+				<!-- <p class="signup">Don’t have an account? <a href="#signup.html" class="signuplink">Sign up</a></p> -->
+			</div>
+
+			<!-- copyright -->
+			<div class="copy-right">
+				<p>Copyright &copy; 2020.Ray All rights reserved.</p>
+			</div>
+			<!-- //copyright -->
+			
+			<!-- 钉钉扫码 -->
+			<el-dialog
+			  title="钉钉"
+			  :visible.sync="dialogVisible"
+			  width="375px">
+			  <div id="login_container"></div>
+			</el-dialog>
+			<!-- 钉钉扫码 -->
+		</div>
+	</div>
+</section>
+</body>
+<script type="text/javascript">
+  function kickout(){
+      var href=location.href;
+      if(href.indexOf("kickout")>0){
+          alert("您的账号在另一台设备上登录，您被挤下线！");
+      } 
+   }
+   window.onload=kickout();
+
+   window.onload = function () {  
+	    if (window.parent.window != window) {  
+	        window.top.location = "/loginInit";
+	    };
+	    var code = #(code);
+		if(code!=0){
+			layer.msg('对不起，您不在我司组织架构内，无法登陆，请联系人事行政部！', {
+		        offset: '15px'
+		        ,icon: #(icon)});
+		}
+	    
+	}
+
+   var hanndleMessage = function (event) {
+       var origin = event.origin;
+       if(origin == "https://login.dingtalk.com" ) { //判断是否来自ddLogin扫码事件。
+           var loginTmpCode = event.data; //拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
+           vm.$message('正在登录中，请稍候...');
+           location.href = "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoawhk0qy7xdambxeqc&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=#(system_url)/dl&loginTmpCode="+loginTmpCode;
+       }
+
+	};
+	 
+	if (typeof window.addEventListener != 'undefined') {
+	    window.addEventListener('message', hanndleMessage, false);
+	} else if (typeof window.attachEvent != 'undefined') {
+	    window.attachEvent('onmessage', hanndleMessage);
+	}
+
+   var vm = new Vue({
+		  el: '#app',
+		  data: {
+			  dialogVisible:false,
+			  form:{}
+		  },
+		  mounted() {
+			  
+		  },
+		  watch:{
+			  dialogVisible:function(){
+				  this.$nextTick(()=>{
+					  var url = encodeURIComponent("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoawhk0qy7xdambxeqc&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=#(system_url)/dl");
+						var obj = DDLogin({
+						     id:"login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+						     goto: url,
+						     style:"padding:20px;background-color:#FFFFFF",
+						     width : "335",
+						     height: "340" 	
+						 });
+				  });
+			  },
+		  },
+		  methods:{
+			  ding(){
+				this.dialogVisible = true;
+			  },
+			  login(){
+				  var _this = this;
+				  axios({
+			    		method:"post",
+			    		url:"/login",
+			    		params:_this.form
+			  		}).then((res)=>{
+				  		console.log(res);
+				    	if(res.status==200){
+				    		if(res.data.state=="ok"){
+				    			this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+			    		        location.href="/";
+					    	}else{
+					    		this.$message.error(res.data.msg);
+						    }
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+			  		})
+			  }
+		  }
+	})
+</script>
+</html>

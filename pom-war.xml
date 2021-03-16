@@ -1,0 +1,251 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ray</groupId>
+  <artifactId>Ray</artifactId>
+  <version>1.0.0</version>
+  <packaging>war</packaging>
+   
+   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <jdk.version>1.8</jdk.version>
+    <junit.version>3.8.1</junit.version>
+    <jfinal.version>4.4</jfinal.version>
+    <cos.version>2017.5</cos.version>
+    <log4j.version>1.2.17</log4j.version>
+    <jfinalundertow.version>1.9</jfinalundertow.version>
+	<druid.version>1.1.10</druid.version>
+	<mysql.version>5.1.46</mysql.version>
+</properties>
+  
+  <!-- 使用阿里 maven 库 -->
+	<repositories>
+		<repository>
+			<id>ali-maven</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+    <dependencies>
+       <dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	      <version>${junit.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+	     <dependency>
+	    	<groupId>com.jfinal</groupId>
+	    	<artifactId>cos</artifactId>
+	    	<version>${cos.version}</version>
+	    </dependency>
+		<dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.github.liaochong</groupId>
+		  <artifactId>myexcel</artifactId>
+		  <version>3.0.1.RELEASE</version>
+		</dependency>
+	  <!-- undertow -->
+		<dependency>
+			<groupId>com.jfinal</groupId>
+			<artifactId>jfinal-undertow</artifactId>
+			<version>${jfinalundertow.version}</version>
+		</dependency>
+
+		<!-- WebSocket 支持 -->
+		<!-- <dependency> <groupId>io.undertow</groupId> <artifactId>undertow-websockets-jsr</artifactId> 
+			<version>2.0.16.Final</version> </dependency> -->
+
+		<!-- 避免控制台输出如下提示信息： SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder". 
+			项目中实际上用不到这个 jar 包 注意：eclipse 下可以将 scope 设置为 provided -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>1.7.25</version>
+			<!-- 打包前改成 provided，此处使用 compile 仅为支持 IDEA -->
+			<scope>provided</scope>
+		</dependency>
+
+
+
+
+	<dependency>
+	    <groupId>com.alibaba</groupId>
+	    <artifactId>druid</artifactId>
+	    <version>${druid.version}</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>${mysql.version}</version>
+	</dependency>
+
+	<!-- shiro -->
+	<dependency>
+	    <groupId>org.apache.shiro</groupId>
+	    <artifactId>shiro-web</artifactId>
+	    <version>1.4.0</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>commons-logging</groupId>
+	    <artifactId>commons-logging</artifactId>
+	    <version>1.1.1</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.jfinal-shiro</groupId>
+	    <artifactId>ray-jfinal-shiro</artifactId>
+	    <version>1.0.0</version>
+	</dependency>
+	
+	<!-- <dependency>
+	    <groupId>com.github.jieblog</groupId>
+	    <artifactId>jfinal-shiro</artifactId>
+	    <version>3.1.0</version>
+	</dependency> -->
+	<!-- shiro -->
+	
+	<dependency>
+	    <groupId>com.taobao</groupId>
+	    <artifactId>Dingtalk</artifactId>
+	    <version>1.0.0</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.alibaba</groupId>
+	    <artifactId>fastjson</artifactId>
+	    <version>1.2.49</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.google.zxing</groupId>
+	    <artifactId>core</artifactId>
+	    <version>3.3.3</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.google.zxing</groupId>
+	    <artifactId>javase</artifactId>
+	    <version>3.3.3</version>
+	</dependency>
+	
+	<dependency>
+        <groupId>it.sauronsoftware.cron4j</groupId>
+        <artifactId>cron4j</artifactId>
+        <version>2.2.5</version>
+    </dependency>
+    
+    <dependency>
+	    <groupId>com.oracle</groupId>
+	    <artifactId>ojdbc6</artifactId>
+	    <version>11.2.0.3</version>
+	</dependency>
+<!--自选库-->
+
+
+	 <dependency>
+	    <groupId>com.jfinal</groupId>
+	    <artifactId>jfinal</artifactId>
+	    <version>${jfinal.version}</version>
+	  </dependency>
+        <dependency>
+            <groupId>net.dreamlu</groupId>
+            <artifactId>JFinal-event</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.3.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>cn.smallbun.screw</groupId>
+			<artifactId>screw-core</artifactId>
+			<version>1.0.5</version>
+			<scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>com.ray</groupId>
+            <artifactId>6S_management</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+		<dependency>
+			<groupId>com.ray</groupId>
+			<artifactId>Ray</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jfinal</artifactId>
+            <version>4.9.01</version>
+        </dependency>
+    </dependencies>
+  
+  
+  <build>
+    <finalName>Ray</finalName>
+	    <plugins>
+    
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<!-- java8 保留参数名编译参数 -->
+					<compilerArgument>-parameters</compilerArgument>
+					<compilerArguments>
+						<verbose/>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+
+			<!-- jar 包中的配置文件优先级高于 config 目录下的 "同名文件" 因此，打包时需要排除掉 jar 包中来自 src/main/resources 
+				目录的 配置文件，否则部署时 config 目录中的同名配置文件不会生效 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<excludes>
+						<exclude>*.txt</exclude>
+						<exclude>*.xml</exclude>
+						<exclude>*.properties</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			
+			
+		 
+	  
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-war-plugin</artifactId>
+	<version>3.0.0</version>
+	<configuration>
+		<encoding>${project.build.sourceEncoding}</encoding>  
+		<warName>${project.artifactId}-${project.version}</warName>  
+		<webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>  
+	</configuration>
+</plugin>
+</plugins>
+  </build>
+</project>

@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 角色管理</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+  <script src="/layuiadmin/main.js"></script>
+</head>
+<body>
+
+  <div class="layui-fluid" id="app">   
+    <div class="layui-card">
+      <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+      </div>
+      <div class="layui-card-body">
+        <div style="padding-bottom: 10px;">
+          <button class="layui-btn layuiadmin-btn-role" @click="add">添加</button>
+        </div>
+      
+        <!-- <table id="LAY-user-back-role" lay-filter="LAY-user-back-role"></table> -->
+        
+        <template>
+			    <el-table
+			      :data="roleList"
+			      :border="true"
+			      :stripe="true"
+			      style="width: 100%">
+			      <el-table-column
+			        prop="role_name"
+			        label="角色标识"
+			        width="">
+			      </el-table-column>
+			      <el-table-column
+			        prop="role_nick_name"
+			        label="角色名"
+			        width="">
+			      </el-table-column>
+			      <el-table-column
+			        prop="role_desc"
+			        label="角色描述"
+			        width="">
+			      </el-table-column>
+			      <el-table-column label="操作">
+				      <template slot-scope="scope">
+				        <el-button
+				          size="mini"
+				          @click="edit(scope.row)">编辑</el-button>
+				        <el-button
+				          size="mini"
+				          type="primary"
+				          @click="setUser(scope.row)">设置人员</el-button>
+				        <el-button
+				          size="mini"
+				          type="danger"
+				          @click="del(scope.row)">删除</el-button>
+				      </template>
+				    </el-table-column>
+			    </el-table>
+			  </template>
+			  <div class="block" style="float:right;margin-top:10px">
+				    <el-pagination
+				      @current-change="handleCurrentChange"
+				      :current-page.sync="currentPage"
+				      :page-size="pageSize"
+				      layout="prev, pager, next, jumper"
+				      :page-count="totalPage">
+				    </el-pagination>
+				  </div>
+        <el-dialog
+			  title="选择拥有该角色的用户"
+			  :visible.sync="dialogVisible"
+			  width="625px">
+			  <template>
+				  <el-transfer
+				    filterable
+				    filter-placeholder="请输入昵称"
+				    :titles="['用户列表', '已选择列表']"
+				    v-model="value"
+				    :props="{
+				      key: 'id',
+				      label: 'nickname'
+				    }"
+				    :data="userList">
+				  </el-transfer>
+				</template>
+			  <span slot="footer" class="dialog-footer">
+			    <el-button @click="dialogVisible = false">取 消</el-button>
+			    <el-button type="primary" @click="submit()">确 定</el-button>
+			  </span>
+			</el-dialog>
+        <script type="text/html" id="table-useradmin-admin">
+          <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+		  <a class="layui-btn layui-btn-xs" lay-event="setUser">设置人员</a>
+          <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+        </script>
+      </div>
+    </div>
+  </div>
+<script src="http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.57/dingtalk.open.js"></script>
+<script>
+var _config = window.parent._config;
+window.dd = window.parent.dd;
+
+dd.ready(function() {
+	//选择责任人
+	$("#selectUser").click(function(event){
+		
+	})
+	
+})
+
+window.dd.error(function(err) {
+    alert('dd error: ' + JSON.stringify(err));
+})
+</script>
+ <script src="/layuiadmin/layui/layui.js"></script>  
+  <script>
+
+  layui.config({
+    base: '/layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'useradmin', 'table'], function(){
+    var $ = layui.$
+    ,form = layui.form
+    ,admin = layui.admin
+    ,table = layui.table;
+    
+    var app = new Vue({
+		  el: '#app',
+		  data: {
+			  fullHeight: document.documentElement.clientHeight-60,
+			  value:[],
+			  dialogVisible:false,
+			  roleList:[],
+			  userList:[],
+			  totalPage:0,
+			  pageSize:20,
+			  currentPage:1,
+			  role_id:''
+		  },
+		  created: function () {
+			  this.getRoleList();
+		  },
+		  methods:{
+				submit(){
+					var _this = this;
+					axios({
+			    		method:"post",
+			    		url:"/sys/setUserRole",
+			    		params:{user_ids:_this.value,role_id:_this.role_id}
+		    		}).then((res)=>{
+				    	if(res.status==200){
+				    		if(res.data.code==1){
+				    			_this.dialogVisible = false;
+				    			_this.$message({
+				    		          message: res.data.msg,
+				    		          type: 'success'
+				    		        });
+				    		}else{
+				    			this.$message.error(res.data.msg);
+				    		}
+					  	}else{
+					  		_this.$message.error('网络请求失败');
+					  	}
+		    		})
+					console.log();
+				},
+				getRoleList(){
+					var _this = this;
+					  axios({
+				    		method:"post",
+				    		url:"/sys/getRole",
+				    		params:{currentPage:1,pageSize:_this.pageSize}
+			    		}).then((res)=>{
+					    	if(res.status==200){
+					    		_this.roleList = res.data.list;
+					    		_this.totalPage = res.data.totalPage;
+						  	}else{
+						  		this.$message.error('网络请求失败');
+						  	}
+			    		})
+				},
+				handleCurrentChange:function(val){
+			    	var _this = this;
+					  axios({
+				    		method:"post",
+				    		url:"/service/getRole",
+				    		params:{currentPage:val,pageSize:_this.pageSize}
+			    		}).then((res)=>{
+					    	if(res.status==200){
+					    		_this.roleList = res.data.list;
+					    		_this.totalPage = res.data.totalPage;
+					    		_this.currentPage = val;
+						  	}else{
+						  		this.$message.error('网络请求失败');
+						  	}
+			    		})  
+			    },
+				setUser(row){
+					var _this = this;
+					_this.role_id = row.id;
+					_this.dialogVisible = true;
+					axios({
+			    		method:"post",
+			    		url:"/sys/getRoleUser",
+			    		params:{role_id:row.id}
+		    		}).then((res)=>{
+			    		console.log(res);
+				    	if(res.status==200){
+				    		_this.userList = res.data.list;
+				    		_this.value = res.data.select;
+					  	}else{
+					  		this.$message.error('网络请求失败');
+					  	}
+		    		})  
+				},
+				add(){
+					layer.open({
+				          type: 2
+				          ,title: '添加新角色'
+				          ,content: '/sys/roleform/0'
+				          ,area: ['500px', '480px']
+				          ,btn: ['确定', '取消']
+				          ,yes: function(index, layero){
+				            var iframeWindow = window['layui-layer-iframe'+ index]
+				            ,submit = layero.find('iframe').contents().find("#LAY-user-role-submit");
+
+				            //监听提交
+				            iframeWindow.layui.form.on('submit(LAY-user-role-submit)', function(data){
+				              var field = data.field; //获取提交的字段
+				              admin.req({
+				                  url: '/sys/roleUpdate' //实际使用请改成服务端真实接口
+				                  ,data: field
+				                  ,done: function(res){
+				                    layer.msg(res.msg, {
+				                      offset: '15px'
+				                      ,icon: 1
+				                      ,time: 1000
+				                    }, function(){
+				                  		  table.reload('LAY-user-back-role'); //数据刷新
+				                            layer.close(index); //关闭弹层
+				                    });
+				                  }
+				                });
+				            });  
+				            submit.trigger('click');
+				          }
+				        }); 
+				},
+				edit(row){
+					layer.open({
+			            type: 2
+			            ,title: '编辑角色'
+			            ,content: '/sys/roleform/'+row.id
+			            ,area: ['500px', '480px']
+			            ,btn: ['确定', '取消']
+			            ,yes: function(index, layero){
+			              var iframeWindow = window['layui-layer-iframe'+ index]
+			              ,submit = layero.find('iframe').contents().find("#LAY-user-role-submit");
+
+			              //监听提交
+			              iframeWindow.layui.form.on('submit(LAY-user-role-submit)', function(data){
+			                var field = data.field; //获取提交的字段
+			                var mymsg1 = layer.msg('正在修改角色信息中，请稍候...', {
+			      			  icon: 16
+			      			  ,shade: 0.5
+			      			  ,time:false
+			      			});
+			              admin.req({
+			    			        url: '/sys/roleUpdate' //实际使用请改成服务端真实接口
+			    			        ,data: field
+			    			        ,success:function(rsp){
+			    				  		if(rsp.code==0){
+			    				  			layer.msg(rsp.msg, {icon: 1});
+			    				  			layer.close(index);
+			    					  	}else{
+			    					  		layer.close(mymsg1);
+			    						}
+			    					}
+			    			      });
+			                
+			              });  
+			              
+			              submit.trigger('click');
+			            }
+			            ,success: function(layero, index){
+			            
+			            }
+			          })
+				}
+		  }
+  })
+
+  });
+  </script>
+</body>
+</html>
+

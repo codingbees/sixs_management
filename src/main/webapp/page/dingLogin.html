@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>登入 - #(system.company)</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="icon" href="../icon.png" type="img/x-ico" />
+  <script src="http://g.alicdn.com/dingding/dingtalk-jsapi/2.0.57/dingtalk.open.js"></script>
+</head>
+<body>
+<script>
+dd.ready(function() {
+    dd.runtime.permission.requestAuthCode({
+        corpId: 'ding1410adc97eed08c335c2f4657eb6378f', // 企业id
+        onSuccess: function (info) {
+             location.href = "/dl/dingLogin/"+info.code;
+        }});
+	});
+</script>
+</body>
+</html>

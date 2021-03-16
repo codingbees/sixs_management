@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>layuiAdmin 网站用户 iframe 框</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+  <style type="text/css">
+		.layui-form-select .layui-tree {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 42px;
+    padding: 5px 0;
+    z-index: 999;
+    min-width: 100%;
+    border: 1px solid #d2d2d2;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.12);
+    box-sizing: border-box;
+}
+.layui-form-selected .layui-tree {
+    display: block;
+}
+	</style>
+</head>
+<body>
+<div class="layui-container">
+<div class="layui-row layui-col-space10">
+<div class="layui-col-lg8 layui-col-md12">
+  <form class="layui-form" lay-filter="layuiadmin-form-useradmin" id="layuiadmin-form-useradmin" style="padding-top: 20px">
+  	<!-- 默认值 -->
+  	<input type="hidden" name="id" value="#(menu.id)">
+  	<input type="hidden" name="parent_menu" value="#(parent_menu)">
+  	<input type="hidden" name="menu_level" value="#(menu_level)">
+  	<!-- 默认值 -->
+    <div class="layui-form-item">
+      <label class="layui-form-label">菜单名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" lay-verify="required" value="#(menu.title)" placeholder="请输入菜单名称，必填" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">菜单标识</label>
+      <div class="layui-input-block">
+        <input type="text" name="title_en" lay-verify="required" value="#(menu.title_en)" placeholder="请输入菜单标识，必填" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label">菜单类型</label>
+	    <div class="layui-input-block">
+	      <select lay-filter="type" name="type" id="type" lay-verify="required">
+	        <option value="1" #(menu.type==1?'selected':'')>单表</option>
+	        <option value="2" #(menu.type==2?'selected':'')>主子表</option>
+	        <option value="3" #(menu.type==3?'selected':'')>自定义</option>
+	      </select>
+	    </div>
+    </div>
+    <div class="layui-form-item">
+	    <label class="layui-form-label">主数据模型</label>
+	    <div class="layui-input-block">
+	    	<select name="data_object_id" lay-filter="aihao">
+		        #for(list:data_object)
+		        <option value="#(list.id)" #(menu.data_object_id == list.id?'selected':'')>#(list.cn)</option>
+		        #end
+		      </select>
+	    </div>
+	</div>
+	<div class="layui-form-item">
+	    <label class="layui-form-label">主ID</label>
+	    <div class="layui-input-block">
+	    	<input type="text" name="parent_id_field" value="#(menu.parent_id_field)" placeholder="主表ID字段" autocomplete="off" class="layui-input">
+	    </div>
+	</div>
+	<div class="layui-form-item">
+	    <label class="layui-form-label">子数据模型</label>
+	    <div class="layui-input-block">
+	    	<select name="son_data_object_id" lay-filter="aihao">
+		        #for(list:data_object)
+		        <option value="#(list.id)" #(menu.son_data_object_id == list.id?'selected':'')>#(list.cn)</option>
+		        #end
+		      </select>
+	    </div>
+	</div>
+	<div class="layui-form-item">
+	    <label class="layui-form-label">子关联ID</label>
+	    <div class="layui-input-block">
+	    	<input type="text" name="son_id_field" value="#(menu.son_id_field)" placeholder="子表关联ID字段" autocomplete="off" class="layui-input">
+	    </div>
+	</div>
+    <div class="layui-form-item">
+	    <label class="layui-form-label">菜单链接</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="href" name="href" value="#(menu.href)" placeholder="类型为自定义时请填写action地址" autocomplete="off" class="layui-input">
+	    </div>
+	</div>
+    <div class="layui-form-item">
+	    <label class="layui-form-label">菜单排序</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="seq_num" name="seq_num" value="#(menu.seq_num)" lay-verify="required" placeholder="菜单排列顺序，必填" autocomplete="off" class="layui-input">
+	    </div>
+    </div>
+    <div class="layui-form-item">
+    	<label class="layui-form-label">菜单图标</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="icon" name="icon" value="#(menu.icon)" lay-verify="" placeholder="只有一级菜单能显示图标" autocomplete="off" class="layui-input">
+	    </div>
+	</div>
+    <div class="layui-form-item layui-hide">
+      <input type="button" lay-submit lay-filter="LAY-user-front-submit" id="LAY-user-front-submit" value="确认">
+    </div>
+  </form>
+  </div>
+  </div>
+  </div>
+
+  <script src="/layuiadmin/layui/layui.js"></script>  
+  <script>
+  layui.config({
+    base: '/layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form', 'upload'], function(){
+    var $ = layui.$
+    ,form = layui.form
+    ,treeselect = layui.treeselect
+    ,upload = layui.upload ;
+
+  })
+  </script>
+</body>
+</html>

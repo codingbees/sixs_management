@@ -39,6 +39,15 @@ public abstract class BaseS6sHandlers<M extends BaseS6sHandlers<M>> extends Mode
 		return getStr("dis_name");
 	}
 
+	public M setDisId(java.lang.Integer disId) {
+		set("dis_id", disId);
+		return (M)this;
+	}
+	
+	public java.lang.Integer getDisId() {
+		return getInt("dis_id");
+	}
+
 	/**
 	 * 处理人
 	 */

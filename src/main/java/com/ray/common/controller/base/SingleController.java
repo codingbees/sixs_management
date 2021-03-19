@@ -79,8 +79,7 @@ public class SingleController extends BaseController {
 		List<DataField> list = DataField.dao
 				.find("select * from data_field where data_object_id = " + get("object_id") + " order by order_num");
 		resp.set("list", list);
-		System.out.println("list is:");
-		System.out.println(list);
+
 		// 是否显示查询按钮
 		boolean is_query = false;
 		// 获取select radio控件的数据集
@@ -100,20 +99,16 @@ public class SingleController extends BaseController {
 //					if ("where".indexOf(list.get(i).getTypeConfig().split("\\|")[0]) == -1) {
 					if (list.get(i).getTypeConfig().split("\\|")[0].indexOf("where") == -1) {
 						sql += " where 1=1";
-						System.out.println("sql where 1=1");
-						System.out.println("i is :"+i);
+
 					}
 					String[] query = list.get(i).getTypeConfig().split("\\|")[3].split(",");
 					Record user = (Record) getSessionAttr("user");
 					for (int j = 0; j < query.length; j++) {
-						System.out.println("j is"+j);
-						System.out.println("query[j].split(\":\")[0] is:");
-						System.out.println(query[j].split(":")[0]);
+
 						sql += " and " + query[j].split(":")[0] + user.get(query[j].split(":")[1]);
 					}
 				}
-				System.out.println("i is :"+i);
-				System.out.println("sql is :"+sql);
+
 				temp = Db.find(sql);
 			}
 			map.add(temp);

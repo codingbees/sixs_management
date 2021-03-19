@@ -79,6 +79,21 @@ public abstract class BaseS6sTotal<M extends BaseS6sTotal<M>> extends Model<M> i
 	}
 
 	/**
+	 * 区域id
+	 */
+	public M setDistrictId(java.lang.Integer districtId) {
+		set("district_id", districtId);
+		return (M)this;
+	}
+	
+	/**
+	 * 区域id
+	 */
+	public java.lang.Integer getDistrictId() {
+		return getInt("district_id");
+	}
+
+	/**
 	 * 发起日期
 	 */
 	public M setDateTime(java.util.Date dateTime) {
@@ -106,6 +121,21 @@ public abstract class BaseS6sTotal<M extends BaseS6sTotal<M>> extends Model<M> i
 	 */
 	public java.lang.Integer getCheckStatus() {
 		return getInt("check_status");
+	}
+
+	/**
+	 * 处理照片二次审核结果：0=待审核，1=审核通过
+	 */
+	public M setDblCheckStatus(java.lang.Integer dblCheckStatus) {
+		set("dbl_check_status", dblCheckStatus);
+		return (M)this;
+	}
+	
+	/**
+	 * 处理照片二次审核结果：0=待审核，1=审核通过
+	 */
+	public java.lang.Integer getDblCheckStatus() {
+		return getInt("dbl_check_status");
 	}
 
 	/**

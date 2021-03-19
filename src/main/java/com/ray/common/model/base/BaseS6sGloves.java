@@ -78,4 +78,19 @@ public abstract class BaseS6sGloves<M extends BaseS6sGloves<M>> extends Model<M>
 		return getStr("dis_name");
 	}
 
+	/**
+	 * 区域id
+	 */
+	public M setDistrictId(java.lang.Integer districtId) {
+		set("district_id", districtId);
+		return (M)this;
+	}
+	
+	/**
+	 * 区域id
+	 */
+	public java.lang.Integer getDistrictId() {
+		return getInt("district_id");
+	}
+
 }

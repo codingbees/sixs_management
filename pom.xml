@@ -141,11 +141,11 @@
 	</dependency> -->
 	<!-- shiro -->
 	
-	<!-- <dependency>
-	    <groupId>com.taobao</groupId>
-	    <artifactId>Dingtalk</artifactId>
-	    <version>1.0.0</version>
-	</dependency> -->
+<!--	 <dependency>-->
+<!--	    <groupId>com.taobao</groupId>-->
+<!--	    <artifactId>Dingtalk</artifactId>-->
+<!--	    <version>2.0.0</version>-->
+<!--	</dependency>-->
 	
 	<dependency>
 	    <groupId>com.alibaba</groupId>

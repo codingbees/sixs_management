@@ -46,7 +46,7 @@ public class AppCheckController extends Controller {
 				str_pic = new String[str.length];
 				for (int i = 0; i < str.length; i++) {
 					str_pic[i] = str[i].substring(17);
-					System.out.println(str_pic[i]);
+
 				}
 			}
 			// System.out.println("picture_of_problem is");

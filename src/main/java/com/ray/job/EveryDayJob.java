@@ -56,31 +56,48 @@ public class EveryDayJob extends AbsJob {
 	}
 	public void findUsers() throws ApiException {
 		//查询每个有待关闭问题的车间在三天内将到期的问题数量，只包含：今天，明天，后天到期的
-		String sql = "SELECT DATE_FORMAT(NOW(),'%Y-%m-%d') `today` ,COUNT(*) qty\n" +
+//		String sql = "SELECT DATE_FORMAT(NOW(),'%Y-%m-%d') `today` ,COUNT(*) qty\n" +
+//				",s.district dis_name,s.first_req_date\n" +
+//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =0 THEN 1 ELSE NULL END )AS diff0\n" +
+//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =1 THEN 1 ELSE NULL END )AS diff1\n" +
+//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =2 THEN 1 ELSE NULL END )AS diff2\n" +
+//				"FROM s6s_total s\n" +
+//				"WHERE DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) <3\n" +
+//				"AND DATE_FORMAT(NOW(),'%Y-%m-%d')<=s.first_req_date \n" +
+//				"AND check_status =1 AND handle_status = 0\n" +
+//				"GROUP BY s.district";
+		//查询每个有待关闭问题的车间在三天内将到期的问题数量，包含：今天，明天，后天到期的,以及日期差异大于2天的
+		String sql = "SELECT district_id,DATE_FORMAT(NOW(),'%Y-%m-%d') `today` ,COUNT(*) qty\n" +
 				",s.district dis_name,s.first_req_date\n" +
 				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =0 THEN 1 ELSE NULL END )AS diff0\n" +
 				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =1 THEN 1 ELSE NULL END )AS diff1\n" +
 				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =2 THEN 1 ELSE NULL END )AS diff2\n" +
+				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) >2 THEN 1 ELSE NULL END )AS rest\n" +
 				"FROM s6s_total s\n" +
-				"WHERE DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) <3\n" +
-				"AND DATE_FORMAT(NOW(),'%Y-%m-%d')<=s.first_req_date \n" +
+				"WHERE DATE_FORMAT(NOW(),'%Y-%m-%d')<=s.first_req_date \n" +
 				"AND check_status =1 AND handle_status = 0\n" +
 				"GROUP BY s.district";
 		List<Record> list = Db.find(sql);
+
 		for (Record record : list) {
+			String district_id = record.getStr("district_id");
 			String dis_name = record.getStr("dis_name");
 			String msg = "6S管理系统提示：你在"+dis_name+"区域有即将到期的6S问题，今天到期"+record.get("diff0").toString()+
 					"条，明天到期"+record.get("diff1").toString()+
-					"条，后天到期"+record.get("diff2").toString()+"条，请及时处理。";
-			String sql2 = "select dis_name, phone from s6s_handlers where dis_name = '"+dis_name+"'";
+					"条，后天到期"+record.get("diff2").toString()+
+					"条，之后到期"+record.get("rest").toString()+
+					"条，请及时处理。";
+
+			String sql2 = "select dis_name, phone from s6s_handlers where dis_id = '"+district_id+"'";
 			List<Record> listPhone = Db.find(sql2);
+
 			for (Record r : listPhone) {
 				String userid = getUserIdByPhone(r.getStr("phone"));
 				JSONObject jsonObj = JSON.parseObject(userid);
 				if((Integer) jsonObj.get("errcode")==0){
 					JSONObject jsonObj2 = JSON.parseObject(jsonObj.get("result").toString());
 					String id = jsonObj2.get("userid").toString();
-					System.out.println("get an userid:"+id+",msg:"+msg);
+//					System.out.println("userid:"+id+",msg:"+msg);
 					//发送消息
 					sendMessage(id,msg);
 
@@ -106,7 +123,7 @@ public class EveryDayJob extends AbsJob {
 
 		String accessToken = AccessTokenUtil.getToken();
 		OapiMessageCorpconversationAsyncsendV2Response rsp = client.execute(request, accessToken);
-		System.out.println("rspBody in Ding send MSG API:"+rsp.getBody());
+//		System.out.println("rspBody in Ding send MSG API:"+rsp.getBody());
 
 
 	}

@@ -43,19 +43,29 @@ public class SixSController extends Controller {
 			curMonth=0;
 		}
 		//此sql语句把所有区域的数据都查出来
-		String sql2 = " SELECT sd.*,tab.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.close_qty,0) AS closed FROM s6s_distriction sd\n" +
-				" LEFT JOIN \n" +
-				"(SELECT s.*,COUNT(s.id) AS total ,t.closed close_qty \n" +
-				"FROM s6s_total s \n" +
-				"LEFT JOIN \n" +
-				"(SELECT s6.district,COUNT(s6.id) AS `closed` \n" +
+//		String sql2 = " SELECT sd.*,tab.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.close_qty,0) AS closed FROM s6s_distriction sd\n" +
+//				" LEFT JOIN \n" +
+//				"(SELECT s.*,COUNT(s.id) AS total ,t.closed close_qty \n" +
+//				"FROM s6s_total s \n" +
+//				"LEFT JOIN \n" +
+//				"(SELECT s6.district,COUNT(s6.id) AS `closed` \n" +
+//				"FROM s6s_total s6 \n" +
+//				"WHERE s6.handle_status = '1' \n" +
+//				"AND s6.date_time>='"+get("selectDate")+"-01' AND s6.date_time<'"+year+"-"+(curMonth+1)+"-01' and s6.check_status = 1 "+"GROUP BY s6.district )  t\n" +
+//				"  ON s.`district` = t.`district`\n" +
+//				"WHERE s.date_time>='"+get("selectDate")+"-01' AND s.date_time<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1 "+"GROUP BY s.district ) tab\n" +
+//				"ON tab.`district`=sd.dis_name";
+		String sql3 = "SELECT sd.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.closedq,0) AS closed FROM s6s_distriction sd\n" +
+				"LEFT JOIN (\n" +
+				"SELECT s6.`district_id`,s6.district,COUNT(s6.check_status) AS `total`, SUM(s6.handle_status) AS `closedq`\n" +
 				"FROM s6s_total s6 \n" +
-				"WHERE s6.handle_status = '1' \n" +
-				"AND s6.date_time>='"+get("selectDate")+"-01' AND s6.date_time<'"+year+"-"+(curMonth+1)+"-01' and s6.check_status = 1 "+"GROUP BY s6.district )  t\n" +
-				"  ON s.`district` = t.`district`\n" +
-				"WHERE s.date_time>='"+get("selectDate")+"-01' AND s.date_time<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1 "+"GROUP BY s.district ) tab\n" +
-				"ON tab.`district`=sd.dis_name";
-		List<Record> recordList = Db.find(sql2);
+				"WHERE s6.first_req_date>='"+get("selectDate")+"-01' AND s6.first_req_date<'"+year+"-"+(curMonth+1)+"-01' AND s6.check_status = 1 " +
+				"GROUP BY s6.district_id) tab\n" +
+				"ON sd.id=tab.`district_id`";
+		List<Record> recordList = Db.find(sql3);
+		String  sqlx = "select * from s6s_kpi_target where year = '"+get("curYear")+"'";
+		List<Record> kpi_target = Db.find(sqlx);
+		res.set("kpi_target",kpi_target);
 		res.set("totalList",recordList);
 		res.set("code",200);
 		renderJson(res);
@@ -77,13 +87,9 @@ public class SixSController extends Controller {
 		res.set("code",200);
 		renderJson(res);
 	}
-	//onLoad获取所有问题数据
+	//待处理页面  onLoad获取所有问题数据
 	public void getAllList(){
-		System.out.println("table_schema is:");
-		System.out.println(PropKit.get("table_schema"));
-		System.out.println(PropKit.get("jdbcUrl"));
-		System.out.println(PropKit.get("domin_path"));
-		System.out.println(PropKit.get("nuber"));
+
 		Record res = new Record();
 		String[] selectDates = get("selectDate").split("-");
 		int curMonth = parseInt(selectDates[1]);
@@ -92,26 +98,30 @@ public class SixSController extends Controller {
 			year++;
 			curMonth=0;
 		}
-		String sql1 = "select dis_name from s6s_distriction";
+		String sql1 = "select * from s6s_distriction";
 		List<Record> districtList = Db.find(sql1);
 		//获取待id的区域名称
 		String sql2 = "select id,dis_name from s6s_distriction";
 		List<Record> districtListWithId = Db.find(sql2);
 		//获取所有数据
-		String dis_name = districtList.get(0).get("dis_name");
+		String dis_id = districtList.get(0).get("id").toString();
 
-		String sql = "select * from s6s_total s where district = '"+dis_name+"' and  handle_status = '0' AND s.first_req_date<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1;";
+		String sql = "select * from s6s_total s where district_id = '"+dis_id+"' and  handle_status = '0' AND s.first_req_date<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1;";
 		List<Record> totalList = Db.find(sql);
-		//获取总数
 		String sql3 = " and s.first_req_date>='"+get("selectDate")+"-01' AND s.first_req_date<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1 ";
-		String sql5 = "select count(*) notClosedQty from s6s_total s where district = '"+dis_name+"' and  handle_status = '0' ";
-		List<Record> notClosedQty = Db.find(sql5+sql3);
 		//获取未关闭数
-		String sql6 = "select count(*) totalQty from s6s_total s where district = '"+dis_name+"' and  handle_status = '0' ";
+		String sql5 = "select count(*) notClosedQty from s6s_total s where district_id ='"+dis_id+"' and s.handle_status = 0";
+		List<Record> notClosedQty = Db.find(sql5+sql3);
+		//获取总数
+		String sql6 = "select count(*) totalQty from s6s_total s where district_id = '"+dis_id+"' ";
 		List<Record> totalQty = Db.find(sql6+sql3);
 
+
+
+
+
 		//获取该车间的处理人
-		String sql_handler = "select *  from s6s_handlers where dis_name = '"+dis_name+"' ";
+		String sql_handler = "select *  from s6s_handlers where dis_id = '"+dis_id+"' ";
 		List<Record> handlerList = Db.find(sql_handler);
 
 		res.set("handlerList",handlerList);
@@ -123,7 +133,7 @@ public class SixSController extends Controller {
 		res.set("code",200);
 		renderJson(res);
 	}
-	//及时获取最新数据
+	//待整改页面 及时获取最新数据
 	public void getLatestData(){
 		Record res = new Record();
 		String[] selectDates = get("selectDate").split("-");
@@ -134,7 +144,7 @@ public class SixSController extends Controller {
 			curMonth=0;
 		}
 
-		String sql1 = "select * from s6s_total s where s.district in ( select dis_name from s6s_distriction where id = '"+get("selectDistrictId")+"' )";
+		String sql1 = "select * from s6s_total s where s.district_id  = '"+get("selectDistrictId")+"' ";
 		String sql2="";
 		//状态为2代表选择全部
 		if(!"2".equals(get("selectStatus"))){
@@ -144,11 +154,11 @@ public class SixSController extends Controller {
 		List<Record> totalList = Db.find(sql1+sql2+sql3);
 
 		//获取总数
-		String sql4 = "select count(*) totalQty from s6s_total s where s.district in ( select dis_name from s6s_distriction where id = '"+get("selectDistrictId")+"')";
+		String sql4 = "select count(*) totalQty from s6s_total s where s.district_id  = '"+get("selectDistrictId")+"'";
 		List<Record> totalQty = Db.find(sql4+sql3);
 		//获取未关闭数
-		String sql5 = "select count(*) notClosedQty from s6s_total s where s.district in ( select dis_name from s6s_distriction where id = '"+get("selectDistrictId")+
-				"' ) and s.handle_status = '0' ";
+		String sql5 = "select count(*) notClosedQty from s6s_total s where s.district_id  = '"+get("selectDistrictId")+
+				"'  and s.handle_status = 0 ";
 		List<Record> notClosedQty = Db.find(sql5+sql3);
 
 		String sql_handler = "select *  from s6s_handlers where dis_id = '"+get("selectDistrictId")+"'";
@@ -163,7 +173,7 @@ public class SixSController extends Controller {
 	}
 	//上传图片
 	public void uploadFile(){
-		System.out.println(getFile("file"));
+
 		String picName = UUID.randomUUID().toString();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String d = sdf.format(new Date());
@@ -180,7 +190,6 @@ public class SixSController extends Controller {
 	public  void savePicName(){
 		S6sTotal s6sTotal = getModel(S6sTotal.class,"");
 
-		s6sTotal.set("handle_status",1);
 		s6sTotal.update();
 		Record rsp = new Record();
 
@@ -193,7 +202,6 @@ public class SixSController extends Controller {
 		s6sTotal.set("check_status",1);
 		s6sTotal.save();
 		Record rsp = new Record();
-
 		rsp.set("status", 200);
 		renderJson(rsp);
 	}
@@ -225,7 +233,7 @@ public class SixSController extends Controller {
 	}
 	public void  getDistrict(){
 		Record record = new Record();
-		List<Record> list = Db.find("select dis_name from s6s_distriction ");
+		List<Record> list = Db.find("select * from s6s_distriction ");
 		record.set("district",list);
 		record.set("status", 200);
 		renderJson(record);
@@ -249,23 +257,6 @@ public class SixSController extends Controller {
 		record.set("status", 200);
 		renderJson(record);
 	}
-//	public  void getDoubleAuditListAfterHandle(){
-//		Record record = new Record();
-//		List<Record> doubleAuditListAfterHandle = Db.find("select * from s6s_total where handle_status = 1 and dbl_handle_status <>1 ");
-//		record.set("doubleAuditListAfterHandle",doubleAuditListAfterHandle);
-//
-//		List<User> managerList = User.dao.find(
-//				"select ding_user_id from user where username ='admin' or username = 'manager'");
-//
-//		record.set("managerList",managerList);
-//
-//
-//		List<Record> district = Db.find("select * from s6s_distriction ");
-//		record.set("district",district);
-//
-//		record.set("status", 200);
-//		renderJson(record);
-//	}
 
 	public void getHandleItem(){
 
@@ -321,7 +312,7 @@ public class SixSController extends Controller {
 				"SELECT s.*,d.`glove_sequence` number " +
 						"FROM s6s_gloves s \n" +
 						"LEFT JOIN s6s_distriction d \n" +
-						"ON s.`dis_name`=d.`dis_name` \n" +
+						"ON s.`district_id`=d.`id` \n" +
 						"WHERE s.release_date>='"+get("selectDate")+"-01' AND s.release_date<'"+year+"-"+(curMonth+1)+"-01' \n" +
 						"ORDER BY release_date ASC,number ASC ");
 		record.set("gloveList",gloveList);
@@ -360,7 +351,7 @@ public class SixSController extends Controller {
 
 	public void saveGloves(){
 		S6sGloves s6sGloves = getModel(S6sGloves.class,"");
-		System.out.println(s6sGloves.get("dis_name").toString());
+//		System.out.println(s6sGloves.get("dis_name").toString());
 		s6sGloves.save();
 		Record record = new Record();
 		record.set("status",200);

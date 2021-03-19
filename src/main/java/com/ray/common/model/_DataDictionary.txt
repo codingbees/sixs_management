@@ -321,6 +321,7 @@ Table: s6s_gloves
  check_status | INT(10)      | YES  |     |                   | 检查状态：0=差，1=中，2=优
  picture      | VARCHAR(128) | YES  |     |                   | 手套图片    
  dis_name     | VARCHAR(128) | YES  |     |                   | 区域名称    
+ district_id  | INT(10)      | YES  |     |                   | 区域id    
 --------------+--------------+------+-----+-------------------+---------
 
 Table: s6s_handlers
@@ -329,6 +330,7 @@ Table: s6s_handlers
 --------------+-------------+------+-----+---------+---------
  id           | INT(10)     | NO   | PRI |         | 序号      
  dis_name     | VARCHAR(30) | YES  |     |         | 区域名称    
+ dis_id       | INT(10)     | YES  |     |         |         
  p_name       | VARCHAR(30) | YES  |     |         | 处理人     
  p_job_number | VARCHAR(30) | YES  |     |         | 处理人工号   
  phone        | CHAR(11)    | YES  |     |         | 处理人手机号  
@@ -346,6 +348,16 @@ Table: s6s_impeach
  handle_status | INT(10)       | YES  |     | 0                 | 处理结果：0=待处理，1=同意，2=拒绝
  date_time     | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP | 发起时间    
 ---------------+---------------+------+-----+-------------------+---------
+
+Table: s6s_kpi_target
+--------+--------------+------+-----+---------+---------
+ Field  | Type         | Null | Key | Default | Remarks 
+--------+--------------+------+-----+---------+---------
+ id     | INT(10)      | NO   | PRI |         |         
+ target | FLOAT(12)    | YES  |     |         | 年度kpi指标 
+ year   | INT(10)      | YES  |     | 2021    | 年份      
+ note   | VARCHAR(255) | YES  |     |         | 备注      
+--------+--------------+------+-----+---------+---------
 
 Table: s6s_prize_exchange_list
 ----------------+--------------+------+-----+---------+---------
@@ -371,25 +383,27 @@ Table: s6s_prize_list
 ----------------+--------------+------+-----+---------+---------
 
 Table: s6s_total
-----------------+---------------+------+-----+-------------------+---------
- Field          | Type          | Null | Key | Default           | Remarks 
-----------------+---------------+------+-----+-------------------+---------
- id             | INT(10)       | NO   | PRI |                   |         
- s6_no          | VARCHAR(30)   | YES  |     |                   | 6S序号    
- problem        | VARCHAR(2000) | YES  |     |                   | 问题描述    
- picture        | VARCHAR(1000) | YES  |     |                   | 问题图片    
- district       | VARCHAR(30)   | YES  |     |                   | 区域      
- date_time      | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP | 发起日期    
- check_status   | INT(10)       | YES  |     | 0                 | 审核状态：0=未审核，1=审核通过，2=拒绝
- handle_status  | INT(10)       | YES  |     | 0                 | 处理结果：0=未关闭，1=已关闭
- pic_after_ck   | VARCHAR(1000) | YES  |     |                   | 整改后图片   
- first_req_date | DATE(10)      | YES  |     |                   | 首次要求完成时间
- act_fin_date   | DATE(10)      | YES  |     |                   | 实际完成时间  
- note           | VARCHAR(30)   | YES  |     |                   | 备注      
- p_name         | VARCHAR(30)   | YES  |     |                   | 检举人     
- p_job_number   | VARCHAR(30)   | YES  |     |                   | 检举人工号   
- score          | INT(10)       | YES  |     | 0                 | 检举分值    
-----------------+---------------+------+-----+-------------------+---------
+------------------+---------------+------+-----+-------------------+---------
+ Field            | Type          | Null | Key | Default           | Remarks 
+------------------+---------------+------+-----+-------------------+---------
+ id               | INT(10)       | NO   | PRI |                   |         
+ s6_no            | VARCHAR(30)   | YES  |     |                   | 6S序号    
+ problem          | VARCHAR(2000) | YES  |     |                   | 问题描述    
+ picture          | VARCHAR(1000) | YES  |     |                   | 问题图片    
+ district         | VARCHAR(255)  | YES  |     |                   | 区域      
+ district_id      | INT(10)       | YES  |     |                   | 区域id    
+ date_time        | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP | 发起日期    
+ check_status     | INT(10)       | YES  |     | 0                 | 审核状态：0=未审核，1=审核通过，2=拒绝
+ dbl_check_status | INT(10)       | YES  |     | 0                 | 处理照片二次审核结果：0=待审核，1=审核通过
+ handle_status    | INT(10)       | YES  |     | 0                 | 处理结果：0=未关闭，1=已关闭
+ pic_after_ck     | VARCHAR(1000) | YES  |     |                   | 整改后图片   
+ first_req_date   | DATE(10)      | YES  |     |                   | 首次要求完成时间
+ act_fin_date     | DATE(10)      | YES  |     |                   | 实际完成时间  
+ note             | VARCHAR(30)   | YES  |     |                   | 备注      
+ p_name           | VARCHAR(30)   | YES  |     |                   | 检举人     
+ p_job_number     | VARCHAR(30)   | YES  |     |                   | 检举人工号   
+ score            | INT(10)       | YES  |     | 0                 | 检举分值    
+------------------+---------------+------+-----+-------------------+---------
 
 Table: serial_number
 --------------------+---------+------+-----+---------+---------

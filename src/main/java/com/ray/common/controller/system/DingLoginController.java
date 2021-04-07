@@ -55,7 +55,7 @@ public class DingLoginController extends Controller {
 				user.set("ding_user_id", response3.getUserid());
 				Db.save("user", user);
 				UserRole ur = new UserRole();
-				ur.setRoleId(2);
+				ur.setRoleId(27);
 				ur.setUserId(user.get("id"));
 				ur.save(); 
 			}
@@ -105,7 +105,7 @@ public class DingLoginController extends Controller {
 				user.set("ding_user_id", userinfo.getUserid());
 				Db.save("user", user);
 				UserRole ur = new UserRole();
-				ur.setRoleId(2);
+				ur.setRoleId(27);
 				ur.setUserId(user.getInt("id"));
 				ur.save(); 
 			}

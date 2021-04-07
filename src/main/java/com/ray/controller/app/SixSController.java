@@ -21,49 +21,49 @@ import com.sun.org.apache.bcel.internal.generic.ARETURN;
 import com.taobao.api.ApiException;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static com.ray.util.Commen.getDaysOfMonth;
+import static java.lang.Integer.compareUnsigned;
 import static java.lang.Integer.parseInt;
 
 //import com.dingtalk.api.request.OapiUserGetByMobileRequest;
 
 public class SixSController extends Controller {
 
-	public void getSixSTotalListByMonth() {
+	public void getSixSTotalListByMonth() throws ParseException {
 		Record res = new Record();
+		String[] selectDates = get("checkDate").split("-");
+		int checkYear = parseInt(selectDates[0]);
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+		Date date = fmt.parse(get("checkDate")+"-01");
+		int day_qty = getDaysOfMonth(date);
 
-		String[] selectDates = get("selectDate").split("-");
-		int curMonth = parseInt(selectDates[1]);
-		int year = parseInt(selectDates[0]);
-		if (curMonth==12){
-			year++;
-			curMonth=0;
-		}
-		//此sql语句把所有区域的数据都查出来
-//		String sql2 = " SELECT sd.*,tab.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.close_qty,0) AS closed FROM s6s_distriction sd\n" +
-//				" LEFT JOIN \n" +
-//				"(SELECT s.*,COUNT(s.id) AS total ,t.closed close_qty \n" +
-//				"FROM s6s_total s \n" +
-//				"LEFT JOIN \n" +
-//				"(SELECT s6.district,COUNT(s6.id) AS `closed` \n" +
-//				"FROM s6s_total s6 \n" +
-//				"WHERE s6.handle_status = '1' \n" +
-//				"AND s6.date_time>='"+get("selectDate")+"-01' AND s6.date_time<'"+year+"-"+(curMonth+1)+"-01' and s6.check_status = 1 "+"GROUP BY s6.district )  t\n" +
-//				"  ON s.`district` = t.`district`\n" +
-//				"WHERE s.date_time>='"+get("selectDate")+"-01' AND s.date_time<'"+year+"-"+(curMonth+1)+"-01' and s.check_status = 1 "+"GROUP BY s.district ) tab\n" +
-//				"ON tab.`district`=sd.dis_name";
-		String sql3 = "SELECT sd.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.closedq,0) AS closed FROM s6s_distriction sd\n" +
+		String sql1 = "SELECT t1.*,q.`staff_qty` staff_of_select_month FROM\n" +
+				"(SELECT sd.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.closedq,0) AS closed FROM s6s_distriction sd\n" +
 				"LEFT JOIN (\n" +
 				"SELECT s6.`district_id`,s6.district,COUNT(s6.check_status) AS `total`, SUM(s6.handle_status) AS `closedq`\n" +
 				"FROM s6s_total s6 \n" +
-				"WHERE s6.first_req_date>='"+get("selectDate")+"-01' AND s6.first_req_date<'"+year+"-"+(curMonth+1)+"-01' AND s6.check_status = 1 " +
-				"GROUP BY s6.district_id) tab\n" +
-				"ON sd.id=tab.`district_id`";
-		List<Record> recordList = Db.find(sql3);
-		String  sqlx = "select * from s6s_kpi_target where year = '"+get("curYear")+"'";
+				"WHERE s6.first_req_date>='"+get("checkDate")+"-01' AND s6.first_req_date<='"+get("checkDate")+"-"+day_qty+"' AND s6.check_status = 1 " +
+				" GROUP BY s6.district_id) tab\n" +
+				"ON sd.id=tab.`district_id`) t1\n" +
+				"LEFT JOIN s6s_staff_qty q\n" +
+				"ON t1.`id` = q.`dis_id`\n" +
+				"WHERE q.moth_date>='"+get("checkDate")+"-01' AND q.moth_date<='"+get("checkDate")+"-"+day_qty+"' ";
+//		String sql3 = "SELECT sd.*,IFNULL(tab.total,0) AS tabtotal,IFNULL(tab.closedq,0) AS closed FROM s6s_distriction sd\n" +
+//				"LEFT JOIN (\n" +
+//				"SELECT s6.`district_id`,s6.district,COUNT(s6.check_status) AS `total`, SUM(s6.handle_status) AS `closedq`\n" +
+//				"FROM s6s_total s6 \n" +
+//				"WHERE s6.first_req_date>='"+get("checkDate")+"-01' AND s6.first_req_date<='"+get("checkDate")+"-"+day_qty+"' AND s6.check_status = 1 " +
+//				"GROUP BY s6.district_id) tab\n" +
+//				"ON sd.id=tab.`district_id`";
+		List<Record> recordList = Db.find(sql1);
+		String  sqlx = "select * from s6s_kpi_target where year = '"+checkYear+"'";
 		List<Record> kpi_target = Db.find(sqlx);
 		res.set("kpi_target",kpi_target);
 		res.set("totalList",recordList);
@@ -71,17 +71,17 @@ public class SixSController extends Controller {
 		renderJson(res);
 	}
 	//
-	public void getAwardList(){
+	public void getAwardList() throws ParseException {
 		Record res = new Record();
-		String[] selectDates = get("selectDate").split("-");
-		int curMonth = parseInt(selectDates[1]);
-		int year = parseInt(selectDates[0]);
-		if (curMonth==12){
-			year++;
-			curMonth=0;
-		}
+		String[] selectDates = get("checkDate").split("-");
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+		Date date = fmt.parse(get("checkDate")+"-01");
+		int day_qty = getDaysOfMonth(date);
+
+
 		String sql = "select * from s6s_award_record s "+
-				"WHERE s.date_time>='"+get("selectDate")+"-01' AND s.date_time<'"+year+"-"+(curMonth+1)+"-01' ";
+				"WHERE s.date_time>='"+get("checkDate")+"-01' AND s.date_time<='"+get("checkDate")+"-"+day_qty+"' ";
+
 		List<Record> recordList = Db.find(sql);
 		res.set("totalListAward",recordList);
 		res.set("code",200);
@@ -117,9 +117,6 @@ public class SixSController extends Controller {
 		List<Record> totalQty = Db.find(sql6+sql3);
 
 
-
-
-
 		//获取该车间的处理人
 		String sql_handler = "select *  from s6s_handlers where dis_id = '"+dis_id+"' ";
 		List<Record> handlerList = Db.find(sql_handler);
@@ -138,6 +135,7 @@ public class SixSController extends Controller {
 		Record res = new Record();
 		String[] selectDates = get("selectDate").split("-");
 		int curMonth = parseInt(selectDates[1]);
+		int checkYear = parseInt(selectDates[0]);
 		int year = parseInt(selectDates[0]);
 		if (curMonth==12){
 			year++;
@@ -164,6 +162,9 @@ public class SixSController extends Controller {
 		String sql_handler = "select *  from s6s_handlers where dis_id = '"+get("selectDistrictId")+"'";
 		List<Record> handlerList = Db.find(sql_handler);
 
+		String  sqlx = "select * from s6s_kpi_target where year = '"+checkYear+"'";
+		List<Record> kpi_target = Db.find(sqlx);
+		res.set("kpi_target",kpi_target);
 		res.set("handlerList",handlerList);
 		res.set("totalList",totalList);
 		res.set("totalQty",totalQty);
@@ -247,7 +248,8 @@ public class SixSController extends Controller {
 		record.set("doubleAuditList",doubleAuditList);
 
 		List<User> managerList = User.dao.find(
-				"select ding_user_id from user where username ='admin' or username = 'manager'");
+				"SELECT * FROM `user` WHERE id IN (" +
+						"SELECT user_id FROM user_role WHERE role_id = 2)");
 		record.set("managerList",managerList);
 
 
@@ -353,6 +355,21 @@ public class SixSController extends Controller {
 		S6sGloves s6sGloves = getModel(S6sGloves.class,"");
 //		System.out.println(s6sGloves.get("dis_name").toString());
 		s6sGloves.save();
+		Record record = new Record();
+		record.set("status",200);
+		renderJson(record);
+	}
+	public void getdata(){
+		Record record = new Record();
+		List<S6sDistriction> total = S6sDistriction.dao.find("select principal,dis_name,id as dis_id,staff_qty from s6s_distriction ");
+		record.set("total",total);
+		renderJson(record);
+	}
+
+	public void saveStaffQty(){
+		S6sStaffQty s6sStaffQty = getModel(S6sStaffQty.class,"");
+
+		s6sStaffQty.save();
 		Record record = new Record();
 		record.set("status",200);
 		renderJson(record);

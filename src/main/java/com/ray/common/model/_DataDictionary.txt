@@ -382,6 +382,18 @@ Table: s6s_prize_list
  prize_name_cn  | VARCHAR(120) | YES  |     |         | 奖品名称    
 ----------------+--------------+------+-----+---------+---------
 
+Table: s6s_staff_qty
+-----------+--------------+------+-----+---------+---------
+ Field     | Type         | Null | Key | Default | Remarks 
+-----------+--------------+------+-----+---------+---------
+ id        | INT(10)      | NO   | PRI |         | 序号      
+ dis_name  | VARCHAR(255) | NO   |     |         | 区域名称    
+ dis_id    | INT(10)      | YES  |     |         | 区域id    
+ principal | VARCHAR(255) | YES  |     |         | 负责人     
+ moth_date | DATE(10)     | YES  |     |         | 日期      
+ staff_qty | INT(10)      | YES  |     | 0       | 员工数量    
+-----------+--------------+------+-----+---------+---------
+
 Table: s6s_total
 ------------------+---------------+------+-----+-------------------+---------
  Field            | Type          | Null | Key | Default           | Remarks 

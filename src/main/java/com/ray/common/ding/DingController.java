@@ -3,6 +3,7 @@ package com.ray.common.ding;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,12 +37,21 @@ public class DingController extends BaseController{
 			MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 			sha1.reset();
 			sha1.update(plain.getBytes("UTF-8"));
-			return sha1.digest().toString();
+			return byteToHex(sha1.digest());
 		} catch (NoSuchAlgorithmException e) {
 			throw new OApiException(0, e.getMessage());
 		} catch (UnsupportedEncodingException e) {
 			throw new OApiException(0, e.getMessage());
 		}
+	}
+	private static String byteToHex(byte[] hash) {
+	    Formatter formatter = new Formatter();
+	    for (byte b : hash) {
+	      formatter.format("%02x", new Object[] { Byte.valueOf(b) });
+	    }
+	    String result = formatter.toString();
+	    formatter.close();
+	    return result;
 	}
 	
 	public static String getConfig(HttpServletRequest request) {

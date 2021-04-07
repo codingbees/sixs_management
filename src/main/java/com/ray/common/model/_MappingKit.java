@@ -42,6 +42,7 @@ public class _MappingKit {
 		arp.addMapping("s6s_kpi_target", "id", S6sKpiTarget.class);
 		arp.addMapping("s6s_prize_exchange_list", "id", S6sPrizeExchangeList.class);
 		arp.addMapping("s6s_prize_list", "id", S6sPrizeList.class);
+		arp.addMapping("s6s_staff_qty", "id", S6sStaffQty.class);
 		arp.addMapping("s6s_total", "id", S6sTotal.class);
 		arp.addMapping("serial_number", "id", SerialNumber.class);
 		arp.addMapping("user", "id", User.class);

@@ -55,17 +55,7 @@ public class EveryDayJob extends AbsJob {
 		}
 	}
 	public void findUsers() throws ApiException {
-		//查询每个有待关闭问题的车间在三天内将到期的问题数量，只包含：今天，明天，后天到期的
-//		String sql = "SELECT DATE_FORMAT(NOW(),'%Y-%m-%d') `today` ,COUNT(*) qty\n" +
-//				",s.district dis_name,s.first_req_date\n" +
-//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =0 THEN 1 ELSE NULL END )AS diff0\n" +
-//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =1 THEN 1 ELSE NULL END )AS diff1\n" +
-//				",COUNT( CASE WHEN DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) =2 THEN 1 ELSE NULL END )AS diff2\n" +
-//				"FROM s6s_total s\n" +
-//				"WHERE DATEDIFF(s.first_req_date,DATE_FORMAT(NOW(),'%Y-%m-%d')) <3\n" +
-//				"AND DATE_FORMAT(NOW(),'%Y-%m-%d')<=s.first_req_date \n" +
-//				"AND check_status =1 AND handle_status = 0\n" +
-//				"GROUP BY s.district";
+
 		//查询每个有待关闭问题的车间在三天内将到期的问题数量，包含：今天，明天，后天到期的,以及日期差异大于2天的
 		String sql = "SELECT district_id,DATE_FORMAT(NOW(),'%Y-%m-%d') `today` ,COUNT(*) qty\n" +
 				",s.district dis_name,s.first_req_date\n" +
@@ -106,7 +96,7 @@ public class EveryDayJob extends AbsJob {
 			}
 		}
 	}
-
+	@NotAction
 	public void sendMessage(String id,String message) throws ApiException {
 
 		DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2");

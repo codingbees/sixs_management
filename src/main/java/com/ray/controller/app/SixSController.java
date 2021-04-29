@@ -374,5 +374,43 @@ public class SixSController extends Controller {
 		record.set("status",200);
 		renderJson(record);
 	}
+	// 查询是否为班长，以及最新精益管理员信息
+	public void checkIsLeader() {
+		String user_jobnumber = get("jobnumber");
+		Boolean isHandler = false;
+		Boolean isLeanManager = false;
+		List<S6sHandlers> auditorForLeader = S6sHandlers.dao.find("select * from s6s_handlers");
+
+		for (int i = 0; i < auditorForLeader.size(); i++) {
+			if (auditorForLeader.get(i).getPJobNumber().equals(user_jobnumber)) {
+				isHandler = true;
+			}
+		}
+		Record resp = new Record();
+		resp.set("code", 0);
+		resp.set("isHandler", isHandler);
+
+		List<User> isManager = User.dao.find("select * from ( SELECT * FROM `user` WHERE id IN (" +
+				"SELECT user_id FROM user_role WHERE role_id = 2)) t where t.job_number = '"+user_jobnumber+"' ");
+		if(isManager.size()==1) {
+			isLeanManager = true;
+		}
+
+		List<User> userManager = User.dao.find("SELECT * FROM `user` WHERE id IN (" +
+				"SELECT user_id FROM user_role WHERE role_id = 2)");
+		String[] leanManagerName = new String[userManager.size()];
+		String[] leanManagerJobNumber = new String[userManager.size()];
+
+		for (int i = 0; i < userManager.size(); i++) {
+			leanManagerName[i] = userManager.get(i).getNickname();
+			leanManagerJobNumber[i] = userManager.get(i).getJobNumber();
+		};
+
+		resp.set("leanManagerName", leanManagerName);
+		resp.set("leanManagerJobNumber", leanManagerJobNumber);
+		resp.set("isLeanManager", isLeanManager);
+		renderJson(resp);
+
+	}
 
 }

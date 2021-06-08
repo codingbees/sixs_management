@@ -42,12 +42,12 @@ public class EveryDayJob extends AbsJob {
 //		sn = new SerialNumber();
 //		sn.setId(1);
 //		sn.save();
-		System.out.println("每日任务已启动");
+		
 		DateFormat df3 = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.CHINA);
 		DateFormat df7 = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.CHINA);
 		String date3 = df3.format(new Date());
 		String time3 = df7.format(new Date());
-		System.out.println("启动时间：" + date3 + " " + time3);
+		System.out.println("每日任务已启动，启动时间：" + date3 + " " + time3);
 		try {
 			findUsers();
 		} catch (ApiException e) {
@@ -84,11 +84,10 @@ public class EveryDayJob extends AbsJob {
 			for (Record r : listPhone) {
 				String userid = getUserIdByPhone(r.getStr("phone"));
 				JSONObject jsonObj = JSON.parseObject(userid);
+				
 				if((Integer) jsonObj.get("errcode")==0){
 					JSONObject jsonObj2 = JSON.parseObject(jsonObj.get("result").toString());
 					String id = jsonObj2.get("userid").toString();
-//					System.out.println("userid:"+id+",msg:"+msg);
-					//发送消息
 					sendMessage(id,msg);
 
 				}

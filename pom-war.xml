@@ -181,7 +181,7 @@
 		</dependency>
         <dependency>
             <groupId>com.ray</groupId>
-            <artifactId>6S_management</artifactId>
+            <artifactId>personal_performance</artifactId>
             <version>1.0.0</version>
         </dependency>
 		<dependency>

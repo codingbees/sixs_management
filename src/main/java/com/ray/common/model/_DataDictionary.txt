@@ -115,6 +115,33 @@ Table: file
  create_time | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 创建时间    
 -------------+--------------+------+-----+-------------------+---------
 
+Table: man_hour
+--------------------+---------------+------+-----+---------+---------
+ Field              | Type          | Null | Key | Default | Remarks 
+--------------------+---------------+------+-----+---------+---------
+ id                 | INT(10)       | NO   | PRI |         | ID      
+ create_time        | DATETIME(19)  | YES  |     |         | 创建时间    
+ department         | VARCHAR(50)   | YES  |     |         | 部门      
+ workshop           | VARCHAR(50)   | YES  |     |         | 车间      
+ production_line    | VARCHAR(50)   | YES  |     |         | 产线      
+ work_date          | DATE(10)      | YES  |     |         | 工作日期    
+ shifts             | VARCHAR(20)   | YES  |     |         | 班次      
+ on_duty_time       | VARCHAR(20)   | YES  |     |         | 上班时长    
+ pd_name            | VARCHAR(20)   | YES  |     |         | 产品名称    
+ pd_no              | VARCHAR(20)   | YES  |     |         | 产品编号    
+ part_name          | VARCHAR(20)   | YES  |     |         | 零件名称    
+ part_no            | VARCHAR(20)   | YES  |     |         | 零件编号    
+ process_name       | VARCHAR(20)   | YES  |     |         | 工序名称    
+ process_no         | VARCHAR(20)   | YES  |     |         | 工序编号    
+ machine_no         | VARCHAR(20)   | YES  |     |         | 设备编号    
+ qualified_qty      | INT(10)       | YES  |     |         | 合格数量    
+ unqualified_qty    | INT(10)       | YES  |     |         | 不合格数量   
+ unqualified_reason | VARCHAR(1000) | YES  |     |         | 不合格原因   
+ invalid_man_hour   | INT(10)       | YES  |     |         | 无效工时    
+ problem            | VARCHAR(1000) | YES  |     |         | 问题描述    
+ note               | VARCHAR(256)  | YES  |     |         | 备注      
+--------------------+---------------+------+-----+---------+---------
+
 Table: menu
 --------------------+--------------+------+-----+---------+---------
  Field              | Type         | Null | Key | Default | Remarks 
@@ -145,6 +172,37 @@ Table: permissions
  type            | INT(10)      | NO   |     |         | 权限类型：1菜单，2按钮，3数据
  gl_id           | INT(10)      | YES  |     |         | 关联菜单ID  
 -----------------+--------------+------+-----+---------+---------
+
+Table: pp
+--------------------+---------------+------+-----+-------------------+---------
+ Field              | Type          | Null | Key | Default           | Remarks 
+--------------------+---------------+------+-----+-------------------+---------
+ id                 | INT(10)       | NO   | PRI |                   |         
+ user_name          | VARCHAR(128)  | YES  |     |                   | 员工姓名    
+ user_job_number    | VARCHAR(40)   | YES  |     |                   | 员工工号    
+ create_time        | DATETIME(19)  | YES  |     | CURRENT_TIMESTAMP | 创建时间    
+ department         | VARCHAR(128)  | YES  |     |                   | 事业部     
+ workshop           | VARCHAR(128)  | YES  |     |                   | 车间      
+ production_line    | VARCHAR(128)  | YES  |     |                   | 产线      
+ leader_name        | VARCHAR(64)   | YES  |     |                   | 班长姓名    
+ work_date          | DATE(10)      | YES  |     |                   | 出勤日期    
+ work_time          | FLOAT(12)     | YES  |     |                   | 出勤时长    
+ shifts             | VARCHAR(128)  | YES  |     |                   | 班次      
+ pd_name            | VARCHAR(128)  | YES  |     |                   | 产品名称    
+ pd_no              | VARCHAR(128)  | YES  |     |                   | 产品编号    
+ part_name          | VARCHAR(128)  | YES  |     |                   | 零件名称    
+ part_no            | VARCHAR(128)  | YES  |     |                   | 零件编号    
+ process_name       | VARCHAR(128)  | YES  |     |                   | 工序名称    
+ process_no         | VARCHAR(128)  | YES  |     |                   | 工序编号    
+ labor_run_factor   | FLOAT(12)     | YES  |     |                   | 人工小时产量  
+ equip_no           | VARCHAR(512)  | YES  |     |                   | 设备编号    
+ qualified_qty      | INT(10)       | YES  |     |                   | 合格数量    
+ unqualified_qty    | INT(10)       | YES  |     |                   | 不合格数量   
+ unqualified_reason | VARCHAR(1000) | YES  |     |                   | 不合格原因   
+ invalid_man_hour   | INT(10)       | YES  |     |                   | 无效工时    
+ questions          | VARCHAR(1000) | YES  |     |                   | 问题      
+ note               | VARCHAR(512)  | YES  |     |                   | 备注      
+--------------------+---------------+------+-----+-------------------+---------
 
 Table: rational_proposal
 ---------------------------+----------------------+------+-----+-------------------+---------
@@ -387,11 +445,11 @@ Table: s6s_staff_qty
  Field     | Type         | Null | Key | Default | Remarks 
 -----------+--------------+------+-----+---------+---------
  id        | INT(10)      | NO   | PRI |         | 序号      
- dis_name  | VARCHAR(255) | NO   |     |         | 区域名称    
+ dis_name  | VARCHAR(255) | YES  |     |         | 区域名称    
  dis_id    | INT(10)      | YES  |     |         | 区域id    
  principal | VARCHAR(255) | YES  |     |         | 负责人     
  moth_date | DATE(10)     | YES  |     |         | 日期      
- staff_qty | INT(10)      | YES  |     | 0       | 员工数量    
+ staff_qty | INT(10)      | YES  |     |         | 员工数量    
 -----------+--------------+------+-----+---------+---------
 
 Table: s6s_total

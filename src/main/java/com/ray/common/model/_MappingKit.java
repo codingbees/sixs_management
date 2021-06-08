@@ -22,8 +22,10 @@ public class _MappingKit {
 		arp.addMapping("data_task", "id", DataTask.class);
 		arp.addMapping("dicts", "id", Dicts.class);
 		arp.addMapping("file", "id", File.class);
+		arp.addMapping("man_hour", "id", ManHour.class);
 		arp.addMapping("menu", "id", Menu.class);
 		arp.addMapping("permissions", "id", Permissions.class);
+		arp.addMapping("pp", "id", Pp.class);
 		arp.addMapping("rational_proposal", "id", RationalProposal.class);
 		arp.addMapping("role_permission", "id", RolePermission.class);
 		arp.addMapping("roles", "id", Roles.class);

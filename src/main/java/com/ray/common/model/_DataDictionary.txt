@@ -178,6 +178,7 @@ Table: pp
  Field              | Type          | Null | Key | Default           | Remarks 
 --------------------+---------------+------+-----+-------------------+---------
  id                 | INT(10)       | NO   | PRI |                   |         
+ pp_no              | VARCHAR(20)   | YES  |     |                   | 序号      
  user_name          | VARCHAR(128)  | YES  |     |                   | 员工姓名    
  user_job_number    | VARCHAR(40)   | YES  |     |                   | 员工工号    
  create_time        | DATETIME(19)  | YES  |     | CURRENT_TIMESTAMP | 创建时间    
@@ -194,6 +195,7 @@ Table: pp
  part_no            | VARCHAR(128)  | YES  |     |                   | 零件编号    
  process_name       | VARCHAR(128)  | YES  |     |                   | 工序名称    
  process_no         | VARCHAR(128)  | YES  |     |                   | 工序编号    
+ process_version    | INT(10)       | YES  |     |                   | 工序版本    
  labor_run_factor   | FLOAT(12)     | YES  |     |                   | 人工小时产量  
  equip_no           | VARCHAR(512)  | YES  |     |                   | 设备编号    
  qualified_qty      | INT(10)       | YES  |     |                   | 合格数量    
@@ -203,6 +205,150 @@ Table: pp
  questions          | VARCHAR(1000) | YES  |     |                   | 问题      
  note               | VARCHAR(512)  | YES  |     |                   | 备注      
 --------------------+---------------+------+-----+-------------------+---------
+
+Table: pp_qr_problem
+--------------------------------+---------------+------+-----+---------+---------
+ Field                          | Type          | Null | Key | Default | Remarks 
+--------------------------------+---------------+------+-----+---------+---------
+ id                             | INT(10)       | NO   | PRI |         | ID      
+ no                             | VARCHAR(255)  | NO   |     |         | 编号      
+ description                    | VARCHAR(255)  | NO   |     |         | 问题描述    
+ workshop                       | VARCHAR(255)  | NO   |     |         | 车间      
+ product_line                   | VARCHAR(255)  | NO   |     |         | 产线      
+ classes                        | VARCHAR(255)  | NO   |     |         | 班次      
+ is_repeat                      | INT(10)       | NO   |     | 0       | 是否重复发生  
+ last_happen_date               | DATE(10)      | YES  |     |         | 上次发生日期  
+ last_description               | VARCHAR(255)  | YES  |     |         | 发生问题    
+ dimensionality                 | VARCHAR(255)  | YES  |     |         | 问题维度    
+ person_leader_id               | VARCHAR(255)  | YES  |     |         | 主持人ID   
+ person_leader_name             | VARCHAR(255)  | YES  |     |         | 主持人姓名   
+ person_liable_id               | VARCHAR(255)  | YES  |     |         | 责任人ID   
+ person_liable_name             | VARCHAR(255)  | YES  |     |         | 责任人姓名   
+ person_tracking_id             | VARCHAR(255)  | YES  |     |         | 跟踪人ID   
+ person_tracking_name           | VARCHAR(255)  | YES  |     |         | 跟踪人姓名   
+ is_upgrade                     | INT(10)       | YES  |     | 0       | 是否升级    
+ next_review_date               | DATE(10)      | YES  |     |         | 下次回顾日期  
+ find_userid                    | VARCHAR(255)  | NO   |     |         | 问题第一发现人ID
+ find_username                  | VARCHAR(255)  | NO   |     |         | 问题第一发现人姓名
+ find_user_part_id              | VARCHAR(255)  | YES  |     |         | 问题第一发现人部门ID
+ find_user_part_name            | VARCHAR(255)  | YES  |     |         | 问题第一发现人部门名称
+ filename                       | VARCHAR(255)  | YES  |     |         | 拍照上传图片  
+ happen_date                    | DATE(10)      | NO   |     |         | 发生日期    
+ when                           | VARCHAR(255)  | YES  |     |         | when    
+ who                            | VARCHAR(255)  | YES  |     |         | who     
+ where                          | VARCHAR(255)  | YES  |     |         | where   
+ what                           | VARCHAR(255)  | YES  |     |         | what    
+ why                            | VARCHAR(255)  | YES  |     |         | why     
+ how                            | VARCHAR(255)  | YES  |     |         | how     
+ how_match                      | VARCHAR(255)  | YES  |     |         | how_match
+ effect                         | VARCHAR(255)  | YES  |     |         | 影响      
+ contain_statu                  | INT(10)       | YES  |     |         | 遏制状态:0=否,1=是,2=完成
+ contain_ll_statu               | INT(10)       | YES  |     |         | 来料状态:0=否,1=是
+ contain_ll_qty                 | VARCHAR(255)  | YES  |     |         | 来料数量/范围 
+ contain_ll_ng_qty              | VARCHAR(255)  | YES  |     |         | 来料NG数量  
+ contain_ll_measure             | VARCHAR(1000) | YES  |     |         | 来料措施    
+ contain_zzp_statu              | INT(10)       | YES  |     |         | 在制品状态:0=否,1=是
+ contain_zzp_qty                | VARCHAR(255)  | YES  |     |         | 在制品数量/范围
+ contain_zzp_ng_qty             | VARCHAR(255)  | YES  |     |         | 在制品NG数量 
+ contain_zzp_measure            | VARCHAR(1000) | YES  |     |         | 在制品措施   
+ contain_cp_statu               | INT(10)       | YES  |     |         | 成品状态:0=否,1=是
+ contain_cp_qty                 | VARCHAR(255)  | YES  |     |         | 成品数量/范围 
+ contain_cp_ng_qty              | VARCHAR(255)  | YES  |     |         | 成品NG数量  
+ contain_cp_measure             | VARCHAR(1000) | YES  |     |         | 成品措施    
+ contain_khc_statu              | INT(10)       | YES  |     |         | 客户处状态:0=否,1=是
+ contain_khc_qty                | VARCHAR(255)  | YES  |     |         | 客户处数量/范围
+ contain_khc_ng_qty             | VARCHAR(255)  | YES  |     |         | 客户处NG数量 
+ contain_khc_measure            | VARCHAR(1000) | YES  |     |         | 客户处措施   
+ contain_temp                   | TEXT(65535)   | YES  |     |         | 临时措施    
+ contain_form                   | VARCHAR(255)  | YES  |     |         | 遏制表单    
+ retrospect                     | VARCHAR(255)  | YES  |     |         | 追溯      
+ contain_statu_color            | CHAR(1)       | YES  |     | R       | 遏制状态颜色  
+ reason_people                  | TEXT(65535)   | YES  |     |         | 人       
+ reason_equipment               | TEXT(65535)   | YES  |     |         | 机       
+ reason_material                | TEXT(65535)   | YES  |     |         | 料       
+ reason_fa                      | TEXT(65535)   | YES  |     |         | 法       
+ reason_environment             | TEXT(65535)   | YES  |     |         | 环       
+ reason_measure                 | TEXT(65535)   | YES  |     |         | 测       
+ produce_reason_skill           | TEXT(65535)   | YES  |     |         | 产生原因：技术 
+ produce_resaon_skill_validity  | TEXT(65535)   | YES  |     |         | 产生原因：技术有效性
+ produce_reason_manage          | TEXT(65535)   | YES  |     |         | 产生原因：管理 
+ produce_resaon_manage_validity | TEXT(65535)   | YES  |     |         | 产生原因：管理有效性
+ outflow_reason_skill           | TEXT(65535)   | YES  |     |         | 流出原因：技术 
+ outflow_resaon_skill_validity  | TEXT(65535)   | YES  |     |         | 流出原因：技术有效性
+ outflow_reason_manage          | TEXT(65535)   | YES  |     |         | 流出原因：管理 
+ outflow_resaon_manage_validity | TEXT(65535)   | YES  |     |         | 流出原因：管理有效性
+ reason_file                    | VARCHAR(255)  | YES  |     |         | 原因分析附件  
+ reason_confirm_user            | VARCHAR(255)  | YES  |     |         | 原因分析确认人 
+ reason_confirm_date            | DATE(10)      | YES  |     |         | 原因分析确认时间
+ reason_statu_color             | CHAR(1)       | YES  |     | Y       | 原因分析状态颜色
+ measure_pg_skill_plan          | TEXT(65535)   | YES  |     |         | 永久措施：防产生-技术-行动计划
+ measure_pg_skill_userid        | VARCHAR(255)  | YES  |     |         | 永久措施：防产生-技术-责任人ID
+ measure_pg_skill_username      | VARCHAR(255)  | YES  |     |         | 永久措施：防产生-技术-责任人姓名
+ measure_pg_skill_date          | DATE(10)      | YES  |     |         | 永久措施：防产生-技术-完成时间
+ measure_pg_manage_plan         | TEXT(65535)   | YES  |     |         | 永久措施：防产生-管理-行动计划
+ measure_pg_manage_userid       | VARCHAR(255)  | YES  |     |         | 永久措施：防产生-管理-责任人ID
+ measure_pg_manage_username     | VARCHAR(255)  | YES  |     |         | 永久措施：防产生-管理-责任人姓名
+ measure_pg_manage_date         | DATE(10)      | YES  |     |         | 永久措施：防产生-管理-完成时间
+ measure_po_skill_plan          | TEXT(65535)   | YES  |     |         | 永久措施：防流出-技术-行动计划
+ measure_po_skill_userid        | VARCHAR(255)  | YES  |     |         | 永久措施：防流出-技术-责任人ID
+ measure_po_skill_username      | VARCHAR(255)  | YES  |     |         | 永久措施：防流出-技术-责任人姓名
+ measure_po_skill_date          | DATE(10)      | YES  |     |         | 永久措施：防流出-技术-完成时间
+ measure_po_manage_plan         | TEXT(65535)   | YES  |     |         | 永久措施：防流出-管理-行动计划
+ measure_po_manage_userid       | VARCHAR(255)  | YES  |     |         | 永久措施：防流出-管理-责任人ID
+ measure_po_manage_username     | VARCHAR(255)  | YES  |     |         | 永久措施：防流出-管理-责任人姓名
+ measure_po_manage_date         | DATE(10)      | YES  |     |         | 永久措施：防流出-管理-完成时间
+ measure_file                   | VARCHAR(255)  | YES  |     |         | 永久措施：附件 
+ measure_tracking               | TEXT(65535)   | YES  |     |         | 永久措施：跟踪情况
+ measure_statu                  | CHAR(1)       | YES  |     | Y       | 永久措施：状态颜色
+ standard_fmea                  | INT(10)       | YES  |     | 1       | 标准化：FMEA
+ standard_fmea_file             | VARCHAR(255)  | YES  |     |         | 标准化：FMEA文件
+ standard_cp                    | INT(10)       | YES  |     | 1       | 标准化：CP  
+ standard_cp_file               | VARCHAR(255)  | YES  |     |         | 标准化：CP文件
+ standard_zyzds                 | INT(10)       | YES  |     | 1       | 标准化：作业指导书
+ standard_zyzds_file            | VARCHAR(255)  | YES  |     |         | 标准化：作业指导书文件
+ standard_hxzk                  | INT(10)       | YES  |     | 1       | 标准化：横向展开
+ standard_hxzk_file             | VARCHAR(255)  | YES  |     |         | 标准化：横向展开文件
+ djb_url                        | VARCHAR(255)  | YES  |     |         | 点检表附件   
+ jyzds_url                      | VARCHAR(255)  | YES  |     |         | 检验指导书附件 
+ fcsh_url                       | VARCHAR(255)  | YES  |     |         | 分层审核附件  
+ standard_statu                 | CHAR(1)       | YES  |     | Y       | 标准化：状态颜色
+ statu                          | INT(10)       | NO   |     | 0       | 问题状态:0=发起,1=已升版,2=已升级,3=已关闭
+ create_time                    | DATETIME(19)  | NO   |     |         | 创建时间    
+ isstatu2                       | INT(10)       | YES  |     | 0       | 0,记录。1已过升版，记录在统计中
+ statu2                         | INT(10)       | YES  |     | 0       | 1再次升版   
+ statu3                         | INT(10)       | YES  |     | 0       | 再再次升版   
+ close_date                     | DATE(10)      | YES  |     |         | 关闭日期    
+ sc_usernames                   | VARCHAR(255)  | YES  |     |         | 生产姓名    
+ js_usernames                   | VARCHAR(255)  | YES  |     |         | 技术姓名    
+ zl_usernames                   | VARCHAR(255)  | YES  |     |         | 质量人姓名   
+ zhuchirenbwl                   | TEXT(65535)   | YES  |     |         | 主持人备忘录  
+ wtscyq                         | VARCHAR(255)  | YES  |     |         | 问题输出要求  
+ cp_name                        | VARCHAR(255)  | YES  |     |         | 产品名称    
+ pc_no                          | VARCHAR(255)  | YES  |     |         | 批次      
+ gys_nbwt                       | INT(10)       | YES  |     | 0       | 供应商问题，默认不是
+ sqdip_id                       | INT(10)       | YES  |     |         | SQDIP问题ID
+ is_hide                        | INT(10)       | YES  |     | 0       | 1隐藏     
+ shift_leader_id                | VARCHAR(128)  | YES  |     |         | pp班长id  
+ shift_leader_name              | VARCHAR(128)  | YES  |     |         | pp班长姓名  
+ ppcheck_result                 | INT(10)       | YES  |     |         | pp审核结果1=同意，2=拒绝
+--------------------------------+---------------+------+-----+---------+---------
+
+Table: pp_skill_grades
+-----------------+--------------+------+-----+---------+---------
+ Field           | Type         | Null | Key | Default | Remarks 
+-----------------+--------------+------+-----+---------+---------
+ id              | INT(10)      | NO   | PRI |         | ID      
+ user_name       | VARCHAR(30)  | YES  |     |         | 姓名      
+ user_job_number | VARCHAR(30)  | YES  |     |         | 工号      
+ pd_no           | VARCHAR(128) | YES  |     |         | 产品编号    
+ pd_name         | VARCHAR(128) | YES  |     |         | 产品名称    
+ part_no         | VARCHAR(128) | YES  |     |         | 零件编号    
+ part_name       | VARCHAR(128) | YES  |     |         | 零件名称    
+ process_no      | VARCHAR(128) | YES  |     |         | 工序编号    
+ process_name    | VARCHAR(128) | YES  |     |         | 工序名称    
+ skill_grade     | INT(10)      | YES  |     |         | 技能等级    
+ audit_person    | VARCHAR(128) | YES  |     |         | 审核人     
+-----------------+--------------+------+-----+---------+---------
 
 Table: rational_proposal
 ---------------------------+----------------------+------+-----+-------------------+---------
@@ -307,6 +453,7 @@ Table: rp_line_structure
  pid            | INT(10)      | YES  |     |         | 上级id    
  leader_name    | VARCHAR(20)  | YES  |     |         | 负责人姓名   
  leader_id      | VARCHAR(20)  | YES  |     |         | 负责人工号   
+ phone_number   | VARCHAR(16)  | YES  |     |         | 手机号     
 ----------------+--------------+------+-----+---------+---------
 
 Table: rp_prize_exchange_list
@@ -485,6 +632,8 @@ Table: serial_number
  ingredient_plan_no | INT(10) | NO   |     | 1       | 配料单号    
  cust_order_no      | INT(10) | NO   |     | 1       | 客户订单号   
  valve_inv_no       | INT(10) | NO   |     | 1       | 电磁阀库存序号 
+ qr_problem_no      | INT(10) | NO   |     | 1       | 快反问题编号  
+ pp_no              | INT(10) | YES  |     |         | 个人绩效系统编号
 --------------------+---------+------+-----+---------+---------
 
 Table: user

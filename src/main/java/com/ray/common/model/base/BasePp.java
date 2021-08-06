@@ -19,6 +19,21 @@ public abstract class BasePp<M extends BasePp<M>> extends Model<M> implements IB
 	}
 
 	/**
+	 * 序号
+	 */
+	public M setPpNo(java.lang.String ppNo) {
+		set("pp_no", ppNo);
+		return (M)this;
+	}
+	
+	/**
+	 * 序号
+	 */
+	public java.lang.String getPpNo() {
+		return getStr("pp_no");
+	}
+
+	/**
 	 * 员工姓名
 	 */
 	public M setUserName(java.lang.String userName) {
@@ -256,6 +271,21 @@ public abstract class BasePp<M extends BasePp<M>> extends Model<M> implements IB
 	 */
 	public java.lang.String getProcessNo() {
 		return getStr("process_no");
+	}
+
+	/**
+	 * 工序版本
+	 */
+	public M setProcessVersion(java.lang.Integer processVersion) {
+		set("process_version", processVersion);
+		return (M)this;
+	}
+	
+	/**
+	 * 工序版本
+	 */
+	public java.lang.Integer getProcessVersion() {
+		return getInt("process_version");
 	}
 
 	/**

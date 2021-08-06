@@ -16,7 +16,7 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 public class _MappingKit2 {
 	
 	public static void mapping(ActiveRecordPlugin arp) {
-		arp.addMapping("rp_line_structure", "id", RpLineStructure.class);
+		arp.addMapping("qr_problem", "id", QrProblem.class);
 
 	}
 }

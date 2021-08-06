@@ -26,6 +26,8 @@ public class _MappingKit {
 		arp.addMapping("menu", "id", Menu.class);
 		arp.addMapping("permissions", "id", Permissions.class);
 		arp.addMapping("pp", "id", Pp.class);
+		arp.addMapping("pp_qr_problem", "id", PpQrProblem.class);
+		arp.addMapping("pp_skill_grades", "id", PpSkillGrades.class);
 		arp.addMapping("rational_proposal", "id", RationalProposal.class);
 		arp.addMapping("role_permission", "id", RolePermission.class);
 		arp.addMapping("roles", "id", Roles.class);

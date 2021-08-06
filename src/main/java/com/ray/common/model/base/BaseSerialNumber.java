@@ -99,4 +99,34 @@ public abstract class BaseSerialNumber<M extends BaseSerialNumber<M>> extends Mo
 		return getInt("valve_inv_no");
 	}
 
+	/**
+	 * 快反问题编号
+	 */
+	public M setQrProblemNo(java.lang.Integer qrProblemNo) {
+		set("qr_problem_no", qrProblemNo);
+		return (M)this;
+	}
+	
+	/**
+	 * 快反问题编号
+	 */
+	public java.lang.Integer getQrProblemNo() {
+		return getInt("qr_problem_no");
+	}
+
+	/**
+	 * 个人绩效系统编号
+	 */
+	public M setPpNo(java.lang.Integer ppNo) {
+		set("pp_no", ppNo);
+		return (M)this;
+	}
+	
+	/**
+	 * 个人绩效系统编号
+	 */
+	public java.lang.Integer getPpNo() {
+		return getInt("pp_no");
+	}
+
 }

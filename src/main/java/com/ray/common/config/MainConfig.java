@@ -98,7 +98,7 @@ public class MainConfig extends JFinalConfig {
 
     public static DruidPlugin getDruidPlugin2() {
         loadConfig();
-        return new DruidPlugin(p.get("jdbcUrl2"), p.get("user"), p.get("password"));
+        return new DruidPlugin(p.get("jdbcUrl2"), p.get("user2"), p.get("password2"));
     }
 
     public static DruidPlugin getDruidPlugin3() {
@@ -110,7 +110,10 @@ public class MainConfig extends JFinalConfig {
         loadConfig();
         return new DruidPlugin(p.get("ojdbcUrl"), p.get("ouser"), p.get("opassword"));
     }
-
+    public static DruidPlugin getDruidPlugin5() {
+        loadConfig();
+        return new DruidPlugin(p.get("jdbcUrl131"), p.get("user131"), p.get("password131"));
+    }
     public static DruidPlugin getSYSDruidPlugin() {
         loadConfig();
         return new DruidPlugin(p.get("sys_jdbcUrl"), p.get("user"), p.get("password"));
@@ -180,11 +183,24 @@ public class MainConfig extends JFinalConfig {
         arp4.setContainerFactory(new CaseInsensitiveContainerFactory());
         me.add(dbPlugin4);
         me.add(arp4);
+        /********添加第五个数据库 BIQS 131数据库*********/
 
+        DruidPlugin dbPlugin5 = getDruidPlugin5();
+        dbPlugin5.addFilter(wallFilter);
+        dbPlugin5.addFilter(new StatFilter());    // 添加 StatFilter 才会有统计数据
+        dbPlugin5.setDriverClass("com.mysql.jdbc.Driver");
+
+        //数据映射 配置ActiveRecord插件
+        ActiveRecordPlugin arp5 = new ActiveRecordPlugin("db131", dbPlugin5);
+        arp5.setShowSql(p.getBoolean("devMode"));
+        arp5.setDialect(new MysqlDialect());
+        me.add(dbPlugin5);
+        me.add(arp5);
+        _MappingKit2.mapping(arp5);
         /********在此添加数据库 表-Model 映射*********/
         //如果使用了JFinal Model 生成器 生成了BaseModel 把下面注释解开即可
         _MappingKit.mapping(arp);
-        _MappingKit2.mapping(arp2);
+
 
         //任务调度
         me.add(new Cron4jPlugin());

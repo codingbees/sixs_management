@@ -84,4 +84,19 @@ public abstract class BaseRpLineStructure<M extends BaseRpLineStructure<M>> exte
 		return getStr("leader_id");
 	}
 
+	/**
+	 * 手机号
+	 */
+	public M setPhoneNumber(java.lang.String phoneNumber) {
+		set("phone_number", phoneNumber);
+		return (M)this;
+	}
+	
+	/**
+	 * 手机号
+	 */
+	public java.lang.String getPhoneNumber() {
+		return getStr("phone_number");
+	}
+
 }
